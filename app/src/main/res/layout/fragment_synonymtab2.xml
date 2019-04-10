@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10pt"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:text="Từ đồng nghĩa:"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="9pt"
+        android:textColor="@color/colorBlack"
+        android:text="=> affection, adoration, friendship, feeling, passion"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10pt"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:text="Từ trái nghĩa:"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="9pt"
+        android:textColor="@color/colorBlack"
+        android:text="=> hate, dislike"/>
+</LinearLayout>

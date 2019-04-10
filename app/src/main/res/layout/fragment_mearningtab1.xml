@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11pt"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:text="love [l^v]"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_weight="0"
+            android:id="@+id/fab_directions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:visibility="visible"
+            app:backgroundTint="@color/colorTab"
+            android:background="@drawable/ic_tab1_24dp"
+            app:elevation="5dp"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_tab1_24dp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10pt"
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"
+        android:text="Danh từ"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="9pt"
+        android:textColor="@color/colorAccent"
+        android:text="=> lòng yêu, tình thương"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="9pt"
+        android:textColor="@color/colorTab"
+        android:text="  love of one's country"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="9pt"
+        android:textColor="@color/colorBlack"
+        android:text="  lòng yêu nước"/>
+
+
+</LinearLayout>
