@@ -10,10 +10,10 @@ import com.example.onlyo.merchandiserdictionary.R
 /**
  * Created by onlyo on 4/7/2019.
  */
-class ExampleTab3Fragment : Fragment() {
+class ExampleTab2Fragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view  = inflater.inflate(R.layout.fragment_exampletab3, container, false)
+        val view  = inflater.inflate(R.layout.fragment_exampletab2, container, false)
 
         /*view.btn_add_location.setOnClickListener {
             val intent = Intent(this.context, AddLocationActivity::class.java)

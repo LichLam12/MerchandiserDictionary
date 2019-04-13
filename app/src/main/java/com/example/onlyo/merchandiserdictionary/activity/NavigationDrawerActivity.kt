@@ -1,5 +1,6 @@
 package com.example.onlyo.merchandiserdictionary.activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -9,7 +10,6 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.MenuItem
 import com.example.onlyo.merchandiserdictionary.R
 import com.example.onlyo.merchandiserdictionary.adapter.ViewPagerAdapter
 import kotlinx.android.synthetic.main.navigationdrawer.*
@@ -17,9 +17,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.app.Activity
 import android.graphics.Rect
-import android.view.View
-import android.view.MotionEvent
+import android.view.*
+import com.example.onlyo.merchandiserdictionary.adapter.FavoriteListAdapter
 import com.example.onlyo.merchandiserdictionary.fragment.*
+import com.example.onlyo.merchandiserdictionary.model.FavoriteDbO
 
 
 class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -28,13 +29,20 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
     lateinit var viewPager: ViewPager
     lateinit var toolbar: Toolbar
     lateinit var edittext: EditText
+    //lateinit var rv_Favorite: RecyclerView
 
+    private lateinit var adapterFavoriteList : FavoriteListAdapter
+    var favList = ArrayList<FavoriteDbO>()
 
+    @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigationdrawer)
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+
+        //rv_Favorite = findViewById(R.id.rv_favorite)
 
         edittext = findViewById(R.id.edt_search)
         edittext.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
@@ -90,17 +98,17 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
         adapter = ViewPagerAdapter(supportFragmentManager)
         //adapter.addFragment(HelloFragment(this), "Hello")
         adapter.addFragmentforother(0,MeaningTab1Fragment(), "Ý nghĩa")
-        adapter.addFragmentforother(1,SynonymTab2Fragment(), "Đồng Nghĩa")
-        adapter.addFragmentforother(2,ExampleTab3Fragment(), "Ví dụ")
-        adapter.addFragmentforother(3,ImageTab4Fragment(), "Hình ảnh")
+        //adapter.addFragmentforother(1,SynonymTab2Fragment(), "Đồng Nghĩa")
+        adapter.addFragmentforother(1, ExampleTab2Fragment(), "Ví dụ")
+        adapter.addFragmentforother(2, ImageTab3Fragment(), "Hình ảnh")
         viewPager.adapter = adapter
     }
 
     private fun setIcon() {
         tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_tab1_24dp)
-        tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_tab1_24dp)
-        tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_tab1_24dp)
-        tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_tab1_24dp)
+        tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_image_24dp)
+        tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_note_24dp)
+        //tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_tab1_24dp)
     }
 
     //Hide ban phim
@@ -133,6 +141,7 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
         }
     }*/
 
+    @SuppressLint("InflateParams")
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
@@ -143,31 +152,34 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
                 tabLayout.visibility = View.VISIBLE
                 adapter.removeFragment()
                 adapter.notifyDataSetChanged()
+                setupViewPager()
+                tabLayout.setupWithViewPager(viewPager)
+                setIcon()
                 viewPager.setCurrentItem(0,true)
             }
             R.id.nav_favorite -> {
                 //adapter.addFragment(HelloFragment(this), "Hello")
-                adapter.addFragmentforother(4,FavoriteFagment(),"")
-                adapter.addFragmentforother(5,DictionaryListFragment(),"")
-                adapter.addFragmentforother(6,ActivityLogFragment(),"")
+                adapter.addFragmentforother(3,FavoriteFagment(),"")
+                adapter.addFragmentforother(4,DictionaryListFragment(),"")
+                adapter.addFragmentforother(5,ActivityLogFragment(),"")
+                adapter.notifyDataSetChanged()
+                viewPager.setCurrentItem(3,true)
+                tabLayout.visibility = View.GONE
+            }
+            R.id.nav_dictlist -> {
+                adapter.addFragmentforother(3,FavoriteFagment(),"")
+                adapter.addFragmentforother(4,DictionaryListFragment(),"")
+                adapter.addFragmentforother(5,ActivityLogFragment(),"")
                 adapter.notifyDataSetChanged()
                 viewPager.setCurrentItem(4,true)
                 tabLayout.visibility = View.GONE
             }
-            R.id.nav_dictlist -> {
-                adapter.addFragmentforother(4,FavoriteFagment(),"")
-                adapter.addFragmentforother(5,DictionaryListFragment(),"")
-                adapter.addFragmentforother(6,ActivityLogFragment(),"")
+            R.id.nav_activitylog -> {
+                adapter.addFragmentforother(3,FavoriteFagment(),"")
+                adapter.addFragmentforother(4,DictionaryListFragment(),"")
+                adapter.addFragmentforother(5,ActivityLogFragment(),"")
                 adapter.notifyDataSetChanged()
                 viewPager.setCurrentItem(5,true)
-                tabLayout.visibility = View.GONE
-            }
-            R.id.nav_activitylog -> {
-                adapter.addFragmentforother(4,FavoriteFagment(),"")
-                adapter.addFragmentforother(5,DictionaryListFragment(),"")
-                adapter.addFragmentforother(6,ActivityLogFragment(),"")
-                adapter.notifyDataSetChanged()
-                viewPager.setCurrentItem(6,true)
                 tabLayout.visibility = View.GONE
             }
         }

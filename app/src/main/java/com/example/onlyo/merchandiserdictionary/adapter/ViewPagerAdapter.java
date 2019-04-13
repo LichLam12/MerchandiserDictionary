@@ -40,8 +40,8 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     public void removeFragment() {
         Log.e("aaa : ", String.valueOf(mFragmentList.size()));
-        if(mFragmentList.size() > 4){
-            for (int j = 4; j < mFragmentList.size(); j++){
+        if(mFragmentList.size() > 3){
+            for (int j = 3; j < mFragmentList.size(); j++){
                 mFragmentList.remove(j);
                 mFragmentTitleList.remove(j);
             }

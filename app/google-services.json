@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "134979162199",
+    "firebase_url": "https://merchandiserdictionary.firebaseio.com",
+    "project_id": "merchandiserdictionary",
+    "storage_bucket": "merchandiserdictionary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134979162199:android:38fe18d80dc7b8ac",
+        "android_client_info": {
+          "package_name": "com.example.onlyo.merchandiserdictionary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "134979162199-5nnbl4rh4vfmqamqft00nff7n9julfhf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.onlyo.merchandiserdictionary",
+            "certificate_hash": "0a141ab34dfe4c24b5400a7e3da5cb71ae241e84"
+          }
+        },
+        {
+          "client_id": "134979162199-7ppkqd42ac25ttb1qh6ko953tkigk4un.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqdLNHTXns0Ti88e_IC-VPeQUrESU94a4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "134979162199-7ppkqd42ac25ttb1qh6ko953tkigk4un.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

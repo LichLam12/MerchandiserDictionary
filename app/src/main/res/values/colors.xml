@@ -8,5 +8,8 @@
     <color name="colorWhite">#ffffff</color>
     <color name="colorBlack">#000</color>
     <color name="colorIndicatorTab">#d1dee8</color>
-    <color name="colorLightSliver2">#c7c7c7</color>
+    <color name="colorLightSliver2">#ababab</color>
+    <color name="colorSliver">#797979</color>
+    <color name="colorYellow">#faf406</color>
+
 </resources>

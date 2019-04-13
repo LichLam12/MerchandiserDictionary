@@ -13,7 +13,7 @@ import com.example.onlyo.merchandiserdictionary.R
 class DictionaryListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view  = inflater.inflate(R.layout.fragment_imagetab4, container, false)
+        val view  = inflater.inflate(R.layout.fragment_imagetab3, container, false)
 
         /*view.btn_add_location.setOnClickListener {
             val intent = Intent(this.context, AddLocationActivity::class.java)

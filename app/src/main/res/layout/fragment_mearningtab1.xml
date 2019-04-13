@@ -29,13 +29,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:visibility="visible"
-            app:backgroundTint="@color/colorTab"
-            android:background="@drawable/ic_tab1_24dp"
-            app:elevation="5dp"
+            app:backgroundTint="@color/colorWhite"
+            android:background="@drawable/ic_volume_24dp"
+            app:elevation="2dp"
             app:fabSize="mini"
-            app:srcCompat="@drawable/ic_tab1_24dp" />
+            app:srcCompat="@drawable/ic_volume_24dp" />
     </LinearLayout>
-
 
     <TextView
         android:layout_width="match_parent"

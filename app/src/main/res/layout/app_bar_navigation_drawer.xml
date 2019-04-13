@@ -29,6 +29,7 @@
                     android:layout_weight="10"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginRight="6dp"
                     android:background="@null"
                     android:textColor="@color/colorWhite"
@@ -41,12 +42,23 @@
                     android:textColorHighlight="@color/colorWhite"
                     android:hint="Nhập vào từ cần tra"/>
                 <ImageButton
-                    android:layout_weight="0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:backgroundTint="@color/colorWhite"
                     android:background="@drawable/ic_mic_24dp"/>
+                <android.support.v7.widget.AppCompatRatingBar
+                    android:id="@+id/ratebar_addtofav"
+                    android:layout_toRightOf="@+id/imgbtn_volume_layout"
+                    style="?android:attr/ratingBarStyleIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:foregroundGravity="right"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="4dp"
+                    android:numStars="1"
+                    android:progressTint="@color/colorYellow"
+                    />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
