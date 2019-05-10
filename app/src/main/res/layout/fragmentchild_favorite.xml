@@ -2,37 +2,42 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/side_nav_bar2"
     android:orientation="vertical"
     android:padding="@dimen/nav_header_vertical_spacing">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
+        android:layout_gravity="center"
+        android:background="@drawable/side_nav_bar2"
         android:orientation="vertical"
         android:padding="8dp">
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
+            android:background="@drawable/side_nav_bar2"
+            android:layout_gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="12dp"
+            android:paddingTop="2dp"
             android:paddingBottom="4dp">
 
             <ImageView
                 android:id="@+id/imgv_favword"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginTop="1dp"
                 android:background="@drawable/ic_search_24dp"
                 android:layout_gravity="center" />
             <TextView
                 android:id="@+id/tv_favword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:textSize="10pt"
-                android:paddingLeft="10dp"
-                android:paddingBottom="4dp"
+                android:paddingLeft="12dp"
                 android:textColor="@color/colorBlack"
                 android:text="love"/>
         </LinearLayout>
@@ -40,7 +45,7 @@
             android:layout_centerInParent="true"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"

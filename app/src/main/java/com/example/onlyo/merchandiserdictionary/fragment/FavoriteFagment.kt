@@ -45,25 +45,7 @@ class FavoriteFagment : Fragment() {
         return view
     }
     private fun loaddatefromfile(){
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
-        favList.add(FavoriteDbO("love","[lʌv]","danh từ","",
-                "Mô tả hình ảnh: đây là từ thường được dùng trong công đoạn may bằng phương pháp tik tok.","","","0"))
+        favList.add(FavoriteDbO("love","[lʌv]","danh từ",""
+                ,"","","0"))
     }
 }

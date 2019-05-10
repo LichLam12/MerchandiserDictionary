@@ -62,7 +62,7 @@
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
-        <android.support.design.widget.TabLayout
+        <!--<android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,10 +71,15 @@
             app:tabBackground="@color/colorTab"
             app:tabTextColor="@color/colorIndicatorTab"
             app:tabMinWidth="60pt"
-            app:tabGravity="fill"/>
+            app:tabGravity="fill"/>-->
 
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_navigation_drawer" />
+    <FrameLayout
+        android:id="@+id/flContent"
+        android:background="@color/colorWhite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"/>
+   <!-- <include layout="@layout/content_navigation_drawer" />-->
 
 </android.support.design.widget.CoordinatorLayout>

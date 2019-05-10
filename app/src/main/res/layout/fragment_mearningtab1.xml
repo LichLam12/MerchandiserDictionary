@@ -14,11 +14,13 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/tv_word"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingRight="4dp"
             android:textSize="11pt"
-            android:textStyle="bold"
             android:textColor="@color/colorBlack"
             android:text="love [l^v]"/>
 
@@ -27,6 +29,7 @@
             android:id="@+id/fab_directions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
             android:layout_gravity="end"
             android:visibility="visible"
             app:backgroundTint="@color/colorWhite"
@@ -39,6 +42,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:textSize="10pt"
         android:textStyle="bold"
         android:textColor="@color/colorBlack"
@@ -47,22 +52,41 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:textSize="9pt"
         android:textColor="@color/colorAccent"
-        android:text="=> lòng yêu, tình thương"/>
+        android:text="=> phụ liệu"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="8dp"
         android:textSize="9pt"
         android:textColor="@color/colorTab"
-        android:text="  love of one's country"/>
+        android:text="We stock the full range of model railway accessories"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="8dp"
         android:textSize="9pt"
         android:textColor="@color/colorBlack"
-        android:text="  lòng yêu nước"/>
+        android:text="Chúng tôi cung cấp đầy đủ các phụ kiện kỹ thuật mẫu"/>
 
+    <ImageView
+        android:id="@+id/img_image"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_marginTop="30dp"
+        android:adjustViewBounds= "true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="220dp"
+        android:src="@drawable/killthislove"
+        android:scaleType="centerCrop" />
 
 </LinearLayout>

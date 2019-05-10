@@ -16,12 +16,14 @@ import kotlinx.android.synthetic.main.navigationdrawer.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.app.Activity
+//import android.app.Fragment
+import android.content.Intent
 import android.graphics.Rect
 import android.view.*
 import com.example.onlyo.merchandiserdictionary.adapter.FavoriteListAdapter
 import com.example.onlyo.merchandiserdictionary.fragment.*
 import com.example.onlyo.merchandiserdictionary.model.FavoriteDbO
-
+import android.support.v4.app.Fragment
 
 class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,8 +43,18 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        var fragment: Fragment? = null
+        var fragmentClass: Class<*>? = null
+        fragmentClass = MeaningTab1Fragment::class.java
+        try {
+            fragment = fragmentClass!!.newInstance() as Fragment
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
-        //rv_Favorite = findViewById(R.id.rv_favorite)
+
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
 
         edittext = findViewById(R.id.edt_search)
         edittext.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
@@ -53,21 +65,13 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
             }
 
         }
-        /*layout_content.setOnClickListener({
-            hideKeyboard(this)
-        })*/
-        /*fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }*/
 
+        //viewPager = findViewById(R.id.viewpager)
+        //tabLayout = findViewById(R.id.tabs)
 
-        viewPager = findViewById(R.id.viewpager)
-        tabLayout = findViewById(R.id.tabs)
-
-        setupViewPager()
-        tabLayout.setupWithViewPager(viewPager)
-        setIcon()
+        //setupViewPager()
+        //tabLayout.setupWithViewPager(viewPager)
+        //setIcon()
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -94,20 +98,21 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
         return super.dispatchTouchEvent(event)
     }
     private lateinit var adapter: ViewPagerAdapter
-    private fun setupViewPager() {
+    /*private fun setupViewPager(fragment:  Fragment) {
         adapter = ViewPagerAdapter(supportFragmentManager)
         //adapter.addFragment(HelloFragment(this), "Hello")
-        adapter.addFragmentforother(0,MeaningTab1Fragment(), "Ý nghĩa")
+        adapter.addFragmentforother(0,fragment, "")
+
         //adapter.addFragmentforother(1,SynonymTab2Fragment(), "Đồng Nghĩa")
-        adapter.addFragmentforother(1, ExampleTab2Fragment(), "Ví dụ")
-        adapter.addFragmentforother(2, ImageTab3Fragment(), "Hình ảnh")
+        //adapter.addFragmentforother(1, ExampleTab2Fragment(), "Ví dụ")
+        //adapter.addFragmentforother(2, ImageTab3Fragment(), "Hình ảnh")
         viewPager.adapter = adapter
-    }
+    }*/
 
     private fun setIcon() {
-        tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_tab1_24dp)
-        tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_image_24dp)
-        tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_note_24dp)
+        //tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_tab1_24dp)
+        //tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_image_24dp)
+        //tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_note_24dp)
         //tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_tab1_24dp)
     }
 
@@ -144,45 +149,48 @@ class NavigationDrawerActivity : AppCompatActivity(), NavigationView.OnNavigatio
     @SuppressLint("InflateParams")
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
+        val id = item.itemId
+        var fragment: Fragment? = null
+        var fragmentClass: Class<*>? = null
+
         when (item.itemId) {
             R.id.nav_search -> {
+                fragmentClass = MeaningTab1Fragment::class.java
                 // Handle the camera action
                 //val homeIntent = Intent(this@NavigationDrawerActivity, NavigationDrawerActivity::class.java)
                 //startActivity(homeIntent)
-                tabLayout.visibility = View.VISIBLE
-                adapter.removeFragment()
-                adapter.notifyDataSetChanged()
-                setupViewPager()
-                tabLayout.setupWithViewPager(viewPager)
-                setIcon()
-                viewPager.setCurrentItem(0,true)
+                //adapter.removeFragment()
+                //adapter.notifyDataSetChanged()
+                //setupViewPager()
+                //viewPager.setCurrentItem(0,true)
             }
             R.id.nav_favorite -> {
-                //adapter.addFragment(HelloFragment(this), "Hello")
-                adapter.addFragmentforother(3,FavoriteFagment(),"")
-                adapter.addFragmentforother(4,DictionaryListFragment(),"")
-                adapter.addFragmentforother(5,ActivityLogFragment(),"")
-                adapter.notifyDataSetChanged()
-                viewPager.setCurrentItem(3,true)
-                tabLayout.visibility = View.GONE
+                fragmentClass = FavoriteFagment::class.java
+                //adapter.addFragmentforother(1,FavoriteFagment(),"")
+                //adapter.addFragmentforother(2,DictionaryListFragment(),"")
+                //adapter.addFragmentforother(3,ActivityLogFragment(),"")
+                //adapter.notifyDataSetChanged()
+
             }
             R.id.nav_dictlist -> {
-                adapter.addFragmentforother(3,FavoriteFagment(),"")
-                adapter.addFragmentforother(4,DictionaryListFragment(),"")
-                adapter.addFragmentforother(5,ActivityLogFragment(),"")
-                adapter.notifyDataSetChanged()
-                viewPager.setCurrentItem(4,true)
-                tabLayout.visibility = View.GONE
+                fragmentClass = DictionaryListFragment::class.java
             }
             R.id.nav_activitylog -> {
-                adapter.addFragmentforother(3,FavoriteFagment(),"")
-                adapter.addFragmentforother(4,DictionaryListFragment(),"")
-                adapter.addFragmentforother(5,ActivityLogFragment(),"")
-                adapter.notifyDataSetChanged()
-                viewPager.setCurrentItem(5,true)
-                tabLayout.visibility = View.GONE
+                fragmentClass = ActivityLogFragment::class.java
             }
+
+
+
         }
+        try {
+            fragment = fragmentClass!!.newInstance() as Fragment
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+        val fragmentManager = supportFragmentManager
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true

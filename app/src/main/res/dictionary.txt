@@ -1,0 +1,11 @@
+﻿(“1”,”accessory”,”[əkˈsesəri]”,”danh từ”,”phụ liệu, phụ kiện”,”https://www.upsieutoc.com/images/2019/04/15/14fc782b7c47bc73c.jpg”,”Chúng tôi cung cấp đầy đủ các phụ kiện kỹ thuật mẫu”,”We stock the full range of model railway accessories”,”0”)
+(“2”,”chest”,”tʃest”,”danh từ”,”ngực, vòng ngực”,”https://www.upsieutoc.com/images/2019/04/15/26675b7b4ec59d985.png?fbclid=IwAR3YfY86nakWaJIUty-VKy6DUwqITrBA_WR8sWVxhnuvXehX90eqP1zF-I0”,”Vị trí túi trước ngực từ điểm cao nhất nằm trên đường ráp vai”,”Chest pocket placement from HPS seam”,”0”)
+(“3”,”armhole”,”ɑːrmhoʊlc”,”danh từ”,”vòng nách”,”https://www.upsieutoc.com/images/2019/04/15/3daf92db0d153888f.jpg?fbclid=IwAR2iEknK5jlYsVcQdPJ2p5P7e-EViKhI1vNSVeutzlp7FbH-Z9cUJx_2bA8”,””,””,”0”)
+(“4”,”bias”,”ˈbaɪəs”,”danh từ”,”thiên canh ( cắt vải xéo 45)”,”https://www.upsieutoc.com/images/2019/04/15/45432348bb952aa6a.jpg?fbclid=IwAR2SJ4QwGruVgZEF30iEaCJVbdCvefVj_hdxw4J9ZpnOzJg6IHYrTpG5jtY”,””,””,”0”)
+(“5”,”binding”,”ˈbaɪndɪŋ”,”danh từ”,”dây viền, dây trang trí”,”https://www.upsieutoc.com/images/2019/04/15/5c9172e47dce9e216.jpg?fbclid=IwAR1n6ETufGtPZ_cdfxVY2yV5jhZZGeUuYIJo7fQlbWKRsubbmhEEyVG44-o”,””,””,”0”)
+(“6”,”balance”,”ˈbæləns”,”danh từ, động từ”,”cân đối, cân bằng”,”https://www.upsieutoc.com/images/2019/04/15/678f4e578f07cb394.png?fbclid=IwAR1YnxOZK0v2HyeWgiejoLNxgQ9MCjeODrDVECJP_pSAkMTDm1DxnN3y_NY”,”cân bằng chuyền”,”balance line”,”0”)
+(“7”,”bulk”,”bʌlk”,”danh từ”,”sản xuất đại trà (số lượng lớn)”,””,”quần áo sản xuất đại trà”,”bulk clothing products”,”0”)
+(“8”,”bottom”,”ˈbɑːtəm”,”danh từ, tính từ”,”đáy, cuối, phần dưới cùng, thấp nhất”,”https://www.upsieutoc.com/images/2019/04/15/8.1.png?fbclid=IwAR1lFZO-Q4tD3Q78Qn48OekRZOH6IvkmGhS_a4Jt3t-gfSZn83fEh0YKy64”,”Nút thấp nhất từ lai”,”Bottom button from hem”,”0”)
+(“9”,”brand”,”brænd”,”danh từ”,”thương hiệu, nhãn (hàng hóa)”,””,”Chanel là một trong những thương hiệu đắt nhất thế giới”,”Chanel is one of the most expensive brands in the world”,”0”)
+(“10”,”bow”,”baʊ”,”danh từ”,”cái nơ”,”https://www.upsieutoc.com/images/2019/04/15/9.png?fbclid=IwAR0bs-z5R6pqPglg-Yx3Dmur7tmuwCk9WOLkytws2EO4W56-6jr0CTocqCc”,””,””,”0”)
+
