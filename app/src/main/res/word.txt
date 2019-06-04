@@ -1,0 +1,60 @@
+﻿accessory
+chest
+armhole
+bias
+binding
+balance
+bulk
+bottom
+brand
+bow
+blend
+amount
+lining fabric
+bobbin spool
+button
+Buyer
+cargo
+CB ( Center back)
+CF ( Center front)
+coat
+cocktail dress
+collar
+contract
+crotch
+cuff
+curve
+density 
+deviation
+distance
+DNTS 
+edge
+elastic
+elastic band
+elastic loop
+elastic string
+factory
+roll
+fit
+flat
+fold
+main lable
+generic label
+goods
+gown
+grade
+neck
+GSM
+height
+hem
+hip
+hole
+hood
+HPS
+interlining
+needle 
+knit fabric
+label
+lapel
+layer
+leg

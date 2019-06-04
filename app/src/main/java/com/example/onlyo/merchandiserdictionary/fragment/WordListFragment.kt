@@ -1,19 +1,21 @@
 package com.example.onlyo.merchandiserdictionary.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.onlyo.merchandiserdictionary.R
+import com.example.onlyo.merchandiserdictionary.activity.NavigationDrawerActivity
 import com.example.onlyo.merchandiserdictionary.adapter.FavoriteListAdapter
+import com.example.onlyo.merchandiserdictionary.adapter.WordListAdapter
 import com.example.onlyo.merchandiserdictionary.model.DictionaryItemDbO
 import kotlinx.android.synthetic.main.fragment_favorite.view.*
 import java.io.File
@@ -22,47 +24,74 @@ import java.io.IOException
 /**
  * Created by onlyo on 4/10/2019.
  */
-class FavoriteFagment : Fragment() {
-    private lateinit var adapterFavoriteList : FavoriteListAdapter
-    var favList = ArrayList<DictionaryItemDbO>()
+class WordListFragment : Fragment() {
+    private lateinit var adapterWordList : WordListAdapter
+    var wordList = ArrayList<DictionaryItemDbO>()
     var number_of_word = 0
+
+    private var listener: SendDataToFragmentInterface? = null
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is NavigationDrawerActivity)
+            this.listener = context as SendDataToFragmentInterface? // gan listener vao MainActivity
+        else
+            throw RuntimeException(context!!.toString() + " must implement onViewSelected!")
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.fragment_favorite, container, false)
+        val view  = inflater.inflate(R.layout.fragment_favorite, container, false)
 
-        /*view.btn_add_location.setOnClickListener {
-            val intent = Intent(this.context, AddLocationActivity::class.java)
-            //after successlly addlocation -> refer to HomeAcrivity (code: 1234)
-            startActivityForResult(intent, 1234)
-        }*/
-        //rv_favorite = findViewById(R.id.rv_favorite)
         readData_justgetsize()
         loaddatefromfile()
         readData()
-        adapterFavoriteList = FavoriteListAdapter(favList,{context,textview, i ->
+        adapterWordList = WordListAdapter(wordList) { context, textview, i ->
 
-            showPopup(context,textview, i)
+
+            listener?.sendData(i, textview.text.toString())
+            //startActivity(intent)
+
+            var fragment: Fragment? = null
+            var fragmentClass: Class<*>? = null
+            fragmentClass = DictionaryFragment::class.java
+
+            try {
+                fragment = fragmentClass!!.newInstance() as Fragment
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            val fragmentManager = fragmentManager
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
+            //showPopup(context,textview, i)
             //adapterFavoriteList.notifyDataSetChanged()
-        })
-        adapterFavoriteList.notifyDataSetChanged()
-
-        for (index in 0..(number_of_word-1)){
-            println(">  " + favList[index].word)
         }
+        //adapterWordList.notifyDataSetChanged()
+
+        /*for (index in 0..(number_of_word-1)){
+            println(">  " + wordList[index].word)
+        }*/
 
         val linearLayoutManager = LinearLayoutManager(this.activity, LinearLayoutManager.VERTICAL, false)
         //val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         view.rv_favorite.layoutManager = linearLayoutManager
-        view.rv_favorite.adapter = adapterFavoriteList
+        view.rv_favorite.adapter = adapterWordList
         view.rv_favorite.isNestedScrollingEnabled = false
+
         return view
     }
+
+    interface SendDataToFragmentInterface {
+        fun sendData(stt: Int, word: String)
+    }
+
     private fun loaddatefromfile(){
         for (index in 1..number_of_word){
-            favList.add(DictionaryItemDbO("","","","","","","0"))
+            wordList.add(DictionaryItemDbO("","","","","","","0"))
         }
         //favList.add(FavoriteDbO("love","[lʌv]","danh từ",""
-          //      ,"","","0"))
+        //      ,"","","0"))
     }
     /**
      * Hàm đọc tập tin trong Android
@@ -70,7 +99,7 @@ class FavoriteFagment : Fragment() {
      * ra FileInputStream
      */
     @Throws(IOException::class)
-    private fun readData(): String {
+    private fun readData() {
         var data = ""
 
         val path = Environment.getDataDirectory()
@@ -87,49 +116,22 @@ class FavoriteFagment : Fragment() {
             var count = 0
             lineList.forEach {
                 //println("> " + it)
-                favList[count].word = it
+                wordList[count].word = it
                 count++
-                /*it.forEach {
-                    if (count == 2 && (element == "“" || element == "”")) {
-                        println(">  " + element.subSequence())
-                    }
-                    count++
-                }*/
             }
-            /*val text:List<String> = bufferedReader.readLines()
-            for(line in text){
-                Log.e("aaaa : ", line.subSequence(6,line.length-1).toString())
-            }*/
-
 
             //file.createNewFile()
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        return data
+        //return data
     }
 
-
-    //Click popup menu of any img
-    private fun showPopup(context: Context, textView: TextView, position: Int) {
-        var popup: PopupMenu? = null
-        popup = PopupMenu(context, textView)
-        //Add only option (remove) of per img
-        popup.menu.add(0, position, 0, "Xóa")
-        popup.show()
-        popup.setOnMenuItemClickListener({
-            Log.e("key : ",(position.toString()))
-           //deleteOneHistory(FavoriteListA
-           //        .getRef(position).key!!,position) //get position id of rv_my_places
-            //runagain++
-            true
-        })
-    }
 
 
     @Throws(IOException::class)
-    private fun readData_justgetsize(): String {
+    private fun readData_justgetsize() {
         var data = ""
 
         val path = Environment.getDataDirectory()
@@ -150,6 +152,6 @@ class FavoriteFagment : Fragment() {
             e.printStackTrace()
         }
 
-        return data
+        //return data
     }
 }

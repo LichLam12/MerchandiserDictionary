@@ -21,8 +21,8 @@
             android:layout_gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="12dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="4dp">
+            android:paddingTop="3dp"
+            android:paddingBottom="6dp">
 
             <ImageView
                 android:id="@+id/imgv_favword"
@@ -33,7 +33,7 @@
                 android:layout_gravity="center" />
             <TextView
                 android:id="@+id/tv_favword"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textSize="10pt"

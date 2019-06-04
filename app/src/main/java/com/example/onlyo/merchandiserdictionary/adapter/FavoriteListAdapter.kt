@@ -1,5 +1,6 @@
 package com.example.onlyo.merchandiserdictionary.adapter
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -7,14 +8,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.onlyo.merchandiserdictionary.R
-import com.example.onlyo.merchandiserdictionary.model.FavoriteDbO
+import com.example.onlyo.merchandiserdictionary.model.DictionaryItemDbO
 import kotlinx.android.synthetic.main.fragmentchild_favorite.view.*
 
 /**
  * Created by onlyo on 4/12/2019.
  */
-class FavoriteListAdapter (private var favoriteList: List<FavoriteDbO>,
-                           private val onItemClick: (String)-> Unit )
+class FavoriteListAdapter (private var favoriteList: List<DictionaryItemDbO>,
+                           private val onItemClickListener : (Context, TextView, Int)-> Unit )
     : RecyclerView.Adapter<FavoriteListAdapter.ViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,12 +39,13 @@ class FavoriteListAdapter (private var favoriteList: List<FavoriteDbO>,
             val tv_favword = itemView.findViewById<View>(R.id.tv_favword) as TextView
             val imgv_favword = itemView.findViewById<View>(R.id.imgv_favword) as ImageView
 
-            fun bind(fav : FavoriteDbO) {
+            fun bind(fav : DictionaryItemDbO) {
                 tv_favword.text = fav.word
-                imgv_favword.setBackgroundResource(R.drawable.ic_history_24dp)
+                imgv_favword.setBackgroundResource(R.drawable.ic_star_24dp)
                 //Lập trình bất đồng bộ
                 //Set cho imgView_transportation trên recycleviewer 1 lắng nghe (nhận id bất kỳ để nhận dạng loại ptien)
-                itemView.tv_favword.setOnClickListener { onItemClick(itemId.toString()) }
+                itemView.tv_favword.setOnClickListener {
+                    onItemClickListener(itemView.context,itemView.tv_favword,adapterPosition) }
 
             }
         }

@@ -10,9 +10,11 @@ android {
         applicationId "com.example.onlyo.merchandiserdictionary"
         minSdkVersion 15
         targetSdkVersion 26
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -23,8 +25,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion '28.0.2'
+    /*compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }*/
 }
-
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+}
+/*repositories {
+    google()
+    jcenter()
+}*/
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -44,6 +63,19 @@ dependencies {
     compile 'jp.wasabeef:picasso-transformations:2.2.1'
     compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.0'
 
+    //Room
+    kapt "android.arch.lifecycle:compiler:1.1.1"
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
+    //annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
+    implementation 'io.reactivex:rxandroid:1.2.1'
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
+
+    // RxJava
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //compile group: 'android.arch.persistence.room', name: 'rxjava2', version: '1.1.1'
 
     implementation 'com.google.firebase:firebase-core:16.0.1'
 }
