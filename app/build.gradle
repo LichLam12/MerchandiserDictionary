@@ -25,7 +25,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '28.0.2'
+    //buildToolsVersion '28.0.2'
     /*compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -39,6 +39,9 @@ allprojects {
             url "https://maven.google.com"
         }
     }
+}
+androidExtensions {
+    experimental = true
 }
 /*repositories {
     google()
@@ -70,13 +73,20 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:1.1.1"
     implementation 'android.arch.persistence.room:rxjava2:1.1.1'
     implementation 'io.reactivex:rxandroid:1.2.1'
+    implementation "android.arch.persistence.room:guava:1.1.1"
+    //LiveData
     implementation 'android.arch.lifecycle:extensions:1.1.1'
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     //compile group: 'android.arch.persistence.room', name: 'rxjava2', version: '1.1.1'
+    //implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 
     implementation 'com.google.firebase:firebase-core:16.0.1'
+
+    compile 'com.github.arimorty:floatingsearchview:2.1.1'
+
 }
 apply plugin: 'com.google.gms.google-services'

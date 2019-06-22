@@ -8,14 +8,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.onlyo.merchandiserdictionary.R
+import com.example.onlyo.merchandiserdictionary.database.DictionaryEntity
 import com.example.onlyo.merchandiserdictionary.model.DictionaryItemDbO
 import kotlinx.android.synthetic.main.fragmentchild_favorite.view.*
 
 /**
  * Created by onlyo on 4/12/2019.
  */
-class FavoriteListAdapter (private var favoriteList: List<DictionaryItemDbO>,
-                           private val onItemClickListener : (Context, TextView, Int)-> Unit )
+class FavoriteListAdapter (private var favoriteList: ArrayList<DictionaryEntity>,
+                           private val onItemClickListener : (Context, TextView, String,String, String, String, String, String, String,String, Int)-> Unit )
     : RecyclerView.Adapter<FavoriteListAdapter.ViewHolder>()
     {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,13 +40,14 @@ class FavoriteListAdapter (private var favoriteList: List<DictionaryItemDbO>,
             val tv_favword = itemView.findViewById<View>(R.id.tv_favword) as TextView
             val imgv_favword = itemView.findViewById<View>(R.id.imgv_favword) as ImageView
 
-            fun bind(fav : DictionaryItemDbO) {
+            fun bind(fav : DictionaryEntity) {
                 tv_favword.text = fav.word
-                imgv_favword.setBackgroundResource(R.drawable.ic_star_24dp)
+                imgv_favword.setBackgroundResource(R.drawable.ic_star_border_24dp)
                 //Lập trình bất đồng bộ
                 //Set cho imgView_transportation trên recycleviewer 1 lắng nghe (nhận id bất kỳ để nhận dạng loại ptien)
                 itemView.tv_favword.setOnClickListener {
-                    onItemClickListener(itemView.context,itemView.tv_favword,adapterPosition) }
+                    onItemClickListener(itemView.context,itemView.tv_favword,fav.spelling,fav.wordkind,fav.meaning,fav.vietmean,fav.engmean
+                            ,fav.imagelink,fav.favorite,fav.id.toString(),adapterPosition) }
 
             }
         }

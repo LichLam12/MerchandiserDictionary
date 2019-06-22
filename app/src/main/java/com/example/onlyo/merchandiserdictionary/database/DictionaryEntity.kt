@@ -11,9 +11,10 @@ data class DictionaryEntity (@PrimaryKey var id : String,
                             @ColumnInfo(name = "word") var word : String,
                             @ColumnInfo(name = "spelling") var spelling: String,
                             @ColumnInfo(name = "wordkind") var wordkind: String,
-                            @ColumnInfo(name = "imagelink") var imagelink: String,
+                             @ColumnInfo(name = "meaning") var meaning: String,
+                             @ColumnInfo(name = "imagelink") var imagelink: String,
                             @ColumnInfo(name = "vietmean") var vietmean: String,
                             @ColumnInfo(name = "engmean") var engmean: String,
                             @ColumnInfo(name = "favorite") var favorite: String) {
-    @Ignore constructor():this("","","","","","","","0")
+    @Ignore constructor():this("","","","","","","","","")
 }

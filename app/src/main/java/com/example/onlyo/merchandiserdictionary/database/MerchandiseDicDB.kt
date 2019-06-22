@@ -30,7 +30,7 @@ abstract class MerchandiseDicDB : RoomDatabase() {
             return Room.databaseBuilder(context,
                     MerchandiseDicDB::class.java, "Dictionary_horus")
                     .fallbackToDestructiveMigration()
-                   // .allowMainThreadQueries()
+                   .allowMainThreadQueries()
                     .build()
         }
     }

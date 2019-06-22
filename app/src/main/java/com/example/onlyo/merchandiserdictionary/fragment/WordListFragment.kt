@@ -1,7 +1,9 @@
 package com.example.onlyo.merchandiserdictionary.fragment
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
@@ -16,18 +18,26 @@ import com.example.onlyo.merchandiserdictionary.R
 import com.example.onlyo.merchandiserdictionary.activity.NavigationDrawerActivity
 import com.example.onlyo.merchandiserdictionary.adapter.FavoriteListAdapter
 import com.example.onlyo.merchandiserdictionary.adapter.WordListAdapter
+import com.example.onlyo.merchandiserdictionary.database.DictionaryEntity
+import com.example.onlyo.merchandiserdictionary.database.MerchandiseDicDB
 import com.example.onlyo.merchandiserdictionary.model.DictionaryItemDbO
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.app_bar_navigation_drawer.*
 import kotlinx.android.synthetic.main.fragment_favorite.view.*
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 /**
  * Created by onlyo on 4/10/2019.
  */
 class WordListFragment : Fragment() {
     private lateinit var adapterWordList : WordListAdapter
-    var wordList = ArrayList<DictionaryItemDbO>()
+    var wordList = ArrayList<DictionaryEntity>()
     var number_of_word = 0
+    private val compositeDisposable = CompositeDisposable()
 
     private var listener: SendDataToFragmentInterface? = null
 
@@ -43,16 +53,42 @@ class WordListFragment : Fragment() {
 
         val view  = inflater.inflate(R.layout.fragment_favorite, container, false)
 
-        readData_justgetsize()
+       /* readData_justgetsize()
         loaddatefromfile()
-        readData()
-        adapterWordList = WordListAdapter(wordList) { context, textview, i ->
+        readData()*/
+        //getAllDictionary().execute()
+        val getAllDictionary =
+        MerchandiseDicDB.getInstance(this@WordListFragment.context).dictionaryDataDao().getAll()
+
+        //how to refer list -> arraylist
+        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        wordList = wordList_temp
+        wordList.forEach { dsp ->
+            Log.e("ket qua2 : ", dsp.toString())
+        }
+
+        adapterWordList = WordListAdapter(wordList) { context, word,  spelling, wordkind,meaning
+                                                      ,vietmeaning,engmeaning,imagelink,favorite,id, i ->
 
 
-            listener?.sendData(i, textview.text.toString())
-            //startActivity(intent)
+            listener?.sendData(word.text.toString(),spelling, wordkind,meaning, vietmeaning, engmeaning, imagelink, favorite,id)
+            Log.e("ket qua3 : ",DictionaryEntity(id,word.text.toString(),spelling,wordkind,meaning,vietmeaning,
+                    engmeaning,imagelink,favorite).toString())
+
+
+            val b = Bundle()
+            b.putString("word", word.text.toString())
+            b.putString("spelling",spelling)
+            b.putString("wordkind",wordkind)
+            b.putString("meaning",meaning)
+            b.putString("vietmeaning",vietmeaning)
+            b.putString("engmeaning",engmeaning)
+            b.putString("imagelink",imagelink)
+            b.putString("favorite",favorite)
+            b.putString("id",id)
 
             var fragment: Fragment? = null
+
             var fragmentClass: Class<*>? = null
             fragmentClass = DictionaryFragment::class.java
 
@@ -61,18 +97,23 @@ class WordListFragment : Fragment() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
+            fragment!!.arguments = b
             val fragmentManager = fragmentManager
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
-            //showPopup(context,textview, i)
-            //adapterFavoriteList.notifyDataSetChanged()
+            fragmentManager?.beginTransaction()?.replace(R.id.flContent, fragment!!,"wordlistfragment")?.addToBackStack("wordlistfragment")?.commit()
+
         }
-        //adapterWordList.notifyDataSetChanged()
+        adapterWordList.notifyDataSetChanged()
+
+
+        //search (update with allword list)
+        val activity_9 = (activity as NavigationDrawerActivity)
+        activity_9.wordList = wordList
+        activity_9.searchList = wordList
+        activity_9.updateadaptersearch(wordList)
 
         /*for (index in 0..(number_of_word-1)){
             println(">  " + wordList[index].word)
         }*/
-
         val linearLayoutManager = LinearLayoutManager(this.activity, LinearLayoutManager.VERTICAL, false)
         //val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         view.rv_favorite.layoutManager = linearLayoutManager
@@ -82,76 +123,11 @@ class WordListFragment : Fragment() {
         return view
     }
 
+
     interface SendDataToFragmentInterface {
-        fun sendData(stt: Int, word: String)
-    }
-
-    private fun loaddatefromfile(){
-        for (index in 1..number_of_word){
-            wordList.add(DictionaryItemDbO("","","","","","","0"))
-        }
-        //favList.add(FavoriteDbO("love","[lʌv]","danh từ",""
-        //      ,"","","0"))
-    }
-    /**
-     * Hàm đọc tập tin trong Android
-     * Dùng openFileInput trong Android để đọc
-     * ra FileInputStream
-     */
-    @Throws(IOException::class)
-    private fun readData() {
-        var data = ""
-
-        val path = Environment.getDataDirectory()
-
-        val file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
-        try {
-            // Make sure the Pictures directory exists.
-            path.mkdirs()
-            val bufferedReader = file.bufferedReader()
-
-            val lineList = mutableListOf<String>()
-
-            bufferedReader.useLines { lines -> lines.forEach { lineList.add(it) } }
-            var count = 0
-            lineList.forEach {
-                //println("> " + it)
-                wordList[count].word = it
-                count++
-            }
-
-            //file.createNewFile()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        //return data
+        fun sendData(word: String, spelling: String, wordkind: String, meaning:String, vietmeaning: String, engmeaning: String,
+                     imagelink: String ,favorite: String,id:String)
     }
 
 
-
-    @Throws(IOException::class)
-    private fun readData_justgetsize() {
-        var data = ""
-
-        val path = Environment.getDataDirectory()
-
-        val file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
-        try {
-            // Make sure the Pictures directory exists.
-            path.mkdirs()
-            val bufferedReader = file.bufferedReader()
-
-            val lineList = mutableListOf<String>()
-
-            bufferedReader.useLines { lines -> lines.forEach { lineList.add(it) } }
-            number_of_word = lineList.size
-
-            //file.createNewFile()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        //return data
-    }
 }

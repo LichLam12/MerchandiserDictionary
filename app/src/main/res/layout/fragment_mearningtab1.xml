@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:keepScreenOn="true"
     android:padding="16dp">
 
     <LinearLayout
@@ -21,9 +22,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:paddingRight="4dp"
+            android:visibility="visible"
             android:textSize="11pt"
             android:textColor="@color/colorBlack"
-            android:text="love [l^v]"/>
+            android:text=""/>
 
         <android.support.design.widget.FloatingActionButton
             android:layout_weight="0"
@@ -32,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
             android:layout_gravity="end"
-            android:visibility="visible"
+            android:visibility="gone"
             app:backgroundTint="@color/colorWhite"
             android:background="@drawable/ic_volume_24dp"
             app:elevation="2dp"
@@ -41,6 +43,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_wordkind"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -51,6 +54,7 @@
         android:text="Danh từ"/>
 
     <TextView
+        android:id="@+id/tv_meaning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -60,6 +64,7 @@
         android:text="=> phụ liệu"/>
 
     <TextView
+        android:id="@+id/tv_engmeaning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -67,8 +72,10 @@
         android:paddingLeft="8dp"
         android:textSize="9pt"
         android:textColor="@color/colorTab"
-        android:text="We stock the full range of model railway accessories"/>
+        android:text="Nhập từ tiếng Anh vào ô tìm kiếm bên trên để tra từ."
+        android:visibility="visible"/>
     <TextView
+        android:id="@+id/tv_vietmeaning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -76,7 +83,7 @@
         android:paddingLeft="8dp"
         android:textSize="9pt"
         android:textColor="@color/colorBlack"
-        android:text="Chúng tôi cung cấp đầy đủ các phụ kiện kỹ thuật mẫu"/>
+        android:text="Lưu ý: Ứng dụng chỉ hỗ trợ từ điển chuyển ngành Công Nghệ May."/>
 
     <ImageView
         android:id="@+id/img_image"
@@ -86,8 +93,7 @@
         android:adjustViewBounds= "true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="220dp"
-        android:src="@drawable/killthislove"
+        android:maxHeight="300dp"
         android:scaleType="centerCrop" />
 
 </LinearLayout>

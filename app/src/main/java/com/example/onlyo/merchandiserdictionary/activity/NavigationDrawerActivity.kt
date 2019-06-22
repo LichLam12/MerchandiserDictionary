@@ -14,49 +14,58 @@ import com.example.onlyo.merchandiserdictionary.R
 import com.example.onlyo.merchandiserdictionary.adapter.ViewPagerAdapter
 import kotlinx.android.synthetic.main.navigationdrawer.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.app.Activity
 //import android.app.Fragment
 import android.content.Intent
 import android.graphics.Rect
 import android.view.*
-import com.example.onlyo.merchandiserdictionary.adapter.FavoriteListAdapter
 import com.example.onlyo.merchandiserdictionary.fragment.*
 import android.support.v4.app.Fragment
 import com.example.onlyo.merchandiserdictionary.model.DictionaryItemDbO
-import android.widget.Toast
-import android.R.attr.name
 import android.os.AsyncTask
 import android.os.Environment
-import android.support.v4.view.ViewCompat.isInLayout
+import android.speech.RecognizerIntent
+import android.support.v7.widget.AppCompatRatingBar
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.widget.*
+import com.example.onlyo.merchandiserdictionary.Class.Suggestion
+import com.example.onlyo.merchandiserdictionary.adapter.SearchListAdapter
 import com.example.onlyo.merchandiserdictionary.database.DictionaryEntity
 import com.example.onlyo.merchandiserdictionary.database.MerchandiseDicDB
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.app_bar_navigation_drawer.*
 
 import java.io.File
 import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataToFragmentInterface
-        ,NavigationView.OnNavigationItemSelectedListener {
-
+        ,NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
     lateinit var tabLayout: TabLayout
     lateinit var viewPager: ViewPager
     lateinit var toolbar: Toolbar
-    lateinit var edittext: EditText
     //lateinit var rv_Favorite: RecyclerView
+    lateinit var searchView: SearchView
+    lateinit var imgbtn_volume: ImageButton
 
     private val compositeDisposable = CompositeDisposable()
 
-    private lateinit var adapterFavoriteList : FavoriteListAdapter
     var favList = ArrayList<DictionaryItemDbO>()
     val dictionaryList = ArrayList<DictionaryEntity>()
+    var wordList = ArrayList<DictionaryEntity>()
+    var searchList = ArrayList<DictionaryEntity>()
+    lateinit var adapterSearchList : SearchListAdapter
 
     var number_of_word = 0
+
+    //to set rating = 0 when refer to any fragment
+    lateinit var ratebar_addtofav: AppCompatRatingBar
+
+    private var listener: WordListFragment.SendDataToFragmentInterface? = null
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,27 +86,142 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
 
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
+        //val f = DictionaryFragment()
+       // val b = Bundle()
+        //b.putString("word", "love")
 
-        edittext = findViewById(R.id.edt_search)
-        edittext.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+        //f.setArguments(b)
+
+
+        //readData_justgetsize()
+        //loaddatefromfile()
+        //readfile()
+
+        //volume icon - speech to text
+        imgbtn_volume = findViewById(R.id.imgbtn_volume)
+        imgbtn_volume.setOnClickListener{getSpeechInput()}
+
+        //to set rating = 0 when refer to any fragment
+        ratebar_addtofav = this.findViewById<View>(R.id.ratebar_addtofav) as AppCompatRatingBar
+
+
+        val getAllDictionary =
+                MerchandiseDicDB.getInstance(this).dictionaryDataDao().getAll()
+
+        //how to refer list -> arraylist
+        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        wordList = wordList_temp
+        wordList.forEach { dsp ->
+            mSuggestions.add(Suggestion(dsp.word))
+        }
+        searchList = wordList
+        adapterSearchList = SearchListAdapter(wordList) { context, word, spelling, wordkind, meaning
+                                                             , vietmeaning, engmeaning, imagelink, favorite, id, i ->
+
+
+            listener?.sendData(word.text.toString(),spelling, wordkind,meaning, vietmeaning, engmeaning, imagelink, favorite,id)
+            Log.e("ket qua3 : ",DictionaryEntity(id,word.text.toString(),spelling,wordkind,meaning,vietmeaning,
+                    engmeaning,imagelink,favorite).toString())
+
+            //save to history list
+            var favorite_temp = "0"
+            if(favorite == "0"){
+                favorite_temp = "2" //add to history
+            } else if(favorite == "1"){ //exists in favorite list
+                favorite_temp = "3" //favorite word + searched word
+            } else if(favorite == "2"){
+                favorite_temp = "2"
+            } else if (favorite == "3"){
+                favorite_temp = "3"
+            }
+            val entity_word = DictionaryEntity(id,word.text.toString(),spelling,wordkind,meaning,imagelink,vietmeaning,engmeaning,favorite_temp)
+            this.updateFavWord().execute(entity_word)
+
+            //send to dictionaryFragment
+            val b = Bundle()
+            b.putString("word", word.text.toString())
+            b.putString("spelling",spelling)
+            b.putString("wordkind",wordkind)
+            b.putString("meaning",meaning)
+            b.putString("vietmeaning",vietmeaning)
+            b.putString("engmeaning",engmeaning)
+            b.putString("imagelink",imagelink)
+            b.putString("favorite",favorite_temp)
+            b.putString("id",id)
+
+            var fragment: Fragment? = null
+
+            var fragmentClass: Class<*>? = null
+            fragmentClass = DictionaryFragment::class.java
+
+            try {
+                fragment = fragmentClass!!.newInstance() as Fragment
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            fragment!!.arguments = b
+
+            val fragmentManager = fragmentManager
+            fragmentManager?.beginTransaction()?.replace(R.id.flContent, fragment!!,"searchfragment")?.addToBackStack("searchfragment")?.commit()
+
+            flContent.visibility = View.VISIBLE
+            rv_search.visibility = View.GONE
+        }
+        adapterSearchList.notifyDataSetChanged()
+
+        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        //val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        rv_search.layoutManager = linearLayoutManager
+        rv_search.adapter = adapterSearchList
+        rv_search.isNestedScrollingEnabled = false
+
+        searchView = findViewById<SearchView>(R.id.edt_search)
+        searchView.setOnQueryTextListener(this)
+
+        /*searchView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
                 hideKeyboard(v)
             } else {
                 //Log.d("focus", "focused")
             }
 
-        }
+        }*/
+        /*searchView.setOnQueryChangeListener(object: FloatingSearchView.OnQueryChangeListener {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+            override fun onSearchTextChanged(oldQuery:String, newQuery:String) {
+                if (oldQuery != "" && newQuery == "")
+                {
+                    searchView.clearSuggestions()
+                }
+                else
+                {
+                    searchView.showProgress()
+                    searchView.swapSuggestions(getSuggestion(newQuery))
+                    searchView.hideProgress()
+                }
+            }
+        })
+        searchView.setOnFocusChangeListener(object:FloatingSearchView.OnFocusChangeListener {
+            override fun onFocus() {
+                searchView.showProgress()
+                searchView.swapSuggestions(getSuggestion(searchView.getQuery()))
+                searchView.hideProgress()
+            }
+            override fun onFocusCleared() {
+            }
+        })
+        searchView.setOnSearchListener(object:FloatingSearchView.OnSearchListener {
+            override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
+                val suggestion = searchSuggestion as DictionaryEntity
+                Toast.makeText(getApplicationContext(), "Ban vua chon " + suggestion.engmean, Toast.LENGTH_SHORT).show()
+            }
+            override fun onSearchAction(currentQuery:String) {
+            }
+        })*/
 
-        readData_justgetsize()
-        loaddatefromfile()
-        readfile()
+        //searchView.attachNavigationDrawerToMenuButton(drawer_layout)
 
-        //viewPager = findViewById(R.id.viewpager)
-        //tabLayout = findViewById(R.id.tabs)
-
-        //setupViewPager()
-        //tabLayout.setupWithViewPager(viewPager)
-        //setIcon()
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -105,6 +229,72 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+    override fun onQueryTextChange(newText: String): Boolean {
+        Log.e("search list : ",newText.toString())
+
+        if(newText == "" || newText.length == 0){
+            flContent.visibility = View.VISIBLE
+            rv_search.visibility = View.GONE
+        }
+        else {
+            rv_search.visibility = View.VISIBLE
+            flContent.visibility = View.GONE
+
+            var charText = newText
+            charText = charText.toLowerCase(Locale.getDefault())
+            //wordList.clear()
+
+            val searchList_temp = ArrayList<DictionaryEntity>()
+            for (wp in searchList) {
+                //Log.e("search list2 : ",wp.toString())
+                if (wp.word.toLowerCase(Locale.getDefault()).contains(charText)) {
+                    searchList_temp.add(wp)
+                    //wordList.add(wp)
+                    //Log.e("search list2 : ",wp.word.toString())
+                }
+            }
+            wordList = searchList_temp
+            for (wp in wordList) {
+                Log.e("search list2 : ",wp.word.toString())
+            }
+            /*if (charText.length == 0) {
+                Log.e("search list2 : ",1.toString())
+                wordList.addAll(searchList)
+                adapterSearchList.notifyDataSetChanged()
+            } else {
+                for (wp in searchList) {
+                    Log.e("search list2 : ",wp.toString())
+                    if (wp.word.toLowerCase(Locale.getDefault()).contains(charText)) {
+                        wordList.add(wp)
+                        Log.e("search list2 : ",wp.toString())
+                    }
+                }
+            }*/
+            adapterSearchList.filter(wordList)
+        }
+        return false
+    }
+
+    fun updateadaptersearch(wordList:ArrayList<DictionaryEntity>){adapterSearchList.filter(wordList)}
+
+
+    private val mSuggestions = ArrayList<Suggestion>()
+    //Search
+    private fun getSuggestion(query:String):List<Suggestion> {
+        val suggestions = ArrayList<Suggestion>()
+        for (suggestion in mSuggestions)
+        {
+            if (suggestion.body.toLowerCase().contains(query.toLowerCase()))
+            {
+                suggestions.add(suggestion)
+            }
+        }
+        return suggestions
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
@@ -125,10 +315,11 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
     }
 
     //Send data from WordList -> Dictionary Fragment
-    override fun sendData(stt: Int, word: String) {
+    override fun sendData(word: String, spelling: String, wordkind: String,meaning:String, vietmeaning: String, engmeaning: String,
+                          imagelink: String ,favorite: String, id: String) {
 
         val fragment = DictionaryFragment()
-        (fragment as DictionaryFragment).showInfor(stt,word)
+        (fragment as DictionaryFragment).showInfor(word,spelling,wordkind,vietmeaning,engmeaning,imagelink,favorite)
 
         /*val dictionaryFragment = supportFragmentManager.findFragmentById(R.id.nav_search) as DictionaryFragment
 
@@ -138,6 +329,32 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
             Toast.makeText(applicationContext, "Fragment is not exist", Toast.LENGTH_LONG).show()
         }*/
     }
+
+    fun getSpeechInput() {
+
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US)
+
+        if (intent.resolveActivity(this.packageManager) != null) {
+            startActivityForResult(intent, 10)
+        } else {
+            Toast.makeText(this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show()
+        }
+    }
+    override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            10 -> if (resultCode == Activity.RESULT_OK && data != null)
+            {
+                val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                //searchView.setText(result[0])
+                searchView.setQuery(result[0],false)
+            }
+        }
+    }
+
+
 
     private lateinit var adapter: ViewPagerAdapter
     /*private fun setupViewPager(fragment:  Fragment) {
@@ -151,17 +368,11 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         viewPager.adapter = adapter
     }*/
 
-    private fun setIcon() {
-        //tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_tab1_24dp)
-        //tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_image_24dp)
-        //tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_note_24dp)
-        //tabLayout.getTabAt(3)!!.setIcon(R.drawable.ic_tab1_24dp)
-    }
 
     private fun loaddatefromfile(){
         for (index in 1..number_of_word){
             //favList.add(DictionaryItemDbO("","","","","","","0"))
-            dictionaryList.add(DictionaryEntity(index.toString(),"","","","","","","0"))
+            dictionaryList.add(DictionaryEntity(index.toString(),"","","","","","","","0"))
         }
         //favList.add(FavoriteDbO("love","[lʌv]","danh từ",""
         //      ,"","","0"))
@@ -176,14 +387,23 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         var data = ""
 
         val path = Environment.getDataDirectory()
+        val file = File(path,"/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
 
-        var file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
+        //var file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
+        /*var file = File(path, "Desktop/files/word.txt")
+        var file2 = File(path, "/local/tmp/files/spelling.txt")
+        var file3 = File(path, "/local/tmp/files/wordkind.txt")
+        var file4 = File(path, "/local/tmp/files/imagelink.txt")
+        var file5 = File(path, "/local/tmp/files/vietmeaning.txt")
+        var file6 = File(path, "/local/tmp/files/engmeaning.txt")
+        var file7 = File(path, "/local/tmp/files/favorite.txt")*/
         var file2 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/spelling.txt")
         var file3 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/wordkind.txt")
         var file4 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/imagelink.txt")
         var file5 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/vietmeaning.txt")
         var file6 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/engmeaning.txt")
         var file7 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/favorite.txt")
+        var file8 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/meaning.txt")
 
         /*when (feildkind) {
             1 ->
@@ -280,59 +500,21 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
                 }
             }
 
-            /*dictionaryList.forEach{
-                Log.e("ket qua : ",it.toString())
-            }*/
+            val bufferedReader8 = file8.bufferedReader()
+            count = 0
+            //bufferedReader.useLines { lines ->lineList.add(1, lines.elementAt(stt))}
+            bufferedReader8.useLines { lines -> lines.forEach {
+                dictionaryList[count++].meaning = it
+            }
+            }
 
-            //insertAllDictionary().execute(dictionaryList)
-            //getDataFromLocal()
-            /*when (feildkind) {
-                1 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].word = it
-                        count++
-                    }
-                2 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].spelling = it
-                        count++
-                    }
-                3 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].wordkind = it
-                        count++
-                    }
-                4 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].image = it
-                        count++
-                    }
-                5 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].vietmean = it
-                        count++
-                    }
-                6 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].engmean = it
-                        count++
-                    }
-                7 ->
-                    lineList.forEach {
-                        //println("> " + it)
-                        favList[count].favorite = it
-                        count++
-                    }
-                *//*else -> { // Note the block
-                    print("x is neither 1 nor 2")
-                }*//*
-            }*/
+            dictionaryList.forEach{
+                Log.e("ket qua : ",it.toString())
+               // MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().insert(it)
+            }
+
+            insertAllDictionary().execute(dictionaryList)
+
             //file.createNewFile()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -341,7 +523,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         //return data
     }
 
-    /*private fun getDataFromLocal()
+    private fun getDataFromLocal()
     {
         // RxJava là thư viện mã nguồn mở implement ReactiveX trên Java. Có 2 lớp chính là Observable và Subscriber:
         // Observable là một lớp đưa ra dòng dữ liệu hoặc sự kiện (event). Flow của Observable là đưa ra một
@@ -349,30 +531,50 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         // Subscriber lắng nghe flow, thực thi các hành động trên dòng dữ liệu hoặc sự kiện được đưa ra bởi Observable
 
         //get all places from database room
-        val getAllDictionary = MerchandiseDicDB.getInstance(context = this@NavigationDrawerActivity).dictionaryDataDao()
-
+        val getAllDictionary = MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().getAll()
+        getAllDictionary.forEach { dsp ->
+            Log.e("ket qua2 : ", dsp.toString())
+        }
         // Probably, you already know that all UI code is done on Android Main thread.
         // RxJava is java library and it does not know about Android Main thread. That is the reason why we use RxAndroid.
         // RxAndroid gives us the possibility to choose Android Main thread as the thread where our code will be executed.
         // Obviously, our Observer should operate on Android Main thread.
-        compositeDisposable.add(getAllDictionary.getAll()
+        /*compositeDisposable.add(getAllDictionary.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ //excute event
                     //val adapter = ViewPagerAdapter(childFragmentManager,it)
                     //view_pager.adapter = adapter
-                    Log.e("ket qua : ",it.toString())
+                    Log.e("ket qua2 : ", it.toString())
                 }, {
-                    Log.e("", "" + it.message)
-                }))
-    }*/
-   /* inner class insertAllDictionary() : AsyncTask<ArrayList<DictionaryEntity>, Void, Void>() {
+                    Log.e("error: ", "" + it.message)
+                }))*/
+    }
+    inner class insertAllDictionary() : AsyncTask<ArrayList<DictionaryEntity>, Void, Void>() {
         override fun doInBackground(vararg params : ArrayList<DictionaryEntity>): Void? {
-            MerchandiseDicDB.getInstance(context = this@NavigationDrawerActivity).dictionaryDataDao().insertAllDictionary(params[0])
+            MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().insertAllDictionary(params[0])
             //getDataFromLocal()
             return null
         }
-    }*/
+    }
+
+    inner class updateFavWord() : AsyncTask<DictionaryEntity, Void, Void>() {
+        override fun doInBackground(vararg word_stt: DictionaryEntity): Void? {
+
+            MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().updateDictionary(word_stt[0])
+            //getDataFromLocal()
+            return null
+        }
+    }
+
+    inner class updateWordList() : AsyncTask<ArrayList<DictionaryEntity>, Void, Void>() {
+        override fun doInBackground(vararg word_list: ArrayList<DictionaryEntity>): Void? {
+
+            MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().updateDictionaryList(word_list[0])
+            //getDataFromLocal()
+            return null
+        }
+    }
 
     @Throws(IOException::class)
     private fun readData_justgetsize() {
@@ -447,6 +649,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         }
     }*/
 
+
     @SuppressLint("InflateParams")
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -454,41 +657,55 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         var fragment: Fragment? = null
         var fragmentClass: Class<*>? = null
 
+        //tv_word = this.findViewById<View>(R.id.tv_word) as TextView
+
+
         when (item.itemId) {
             R.id.nav_search -> {
                 fragmentClass = DictionaryFragment::class.java
+                ratebar_addtofav.rating = 0.0F
+                ratebar_addtofav.visibility = View.VISIBLE
+                imgbtn_deleteall.visibility = View.GONE
                 // Handle the camera action
                 //val homeIntent = Intent(this@NavigationDrawerActivity, NavigationDrawerActivity::class.java)
                 //startActivity(homeIntent)
                 //adapter.removeFragment()
                 //adapter.notifyDataSetChanged()
                 //setupViewPager()
-                //viewPager.setCurrentItem(0,true)
+                //viewPager.setCurrentItem(0,true
             }
             R.id.nav_favorite -> {
                 fragmentClass = FavoriteFagment::class.java
+                ratebar_addtofav.rating = 0.0F
+                ratebar_addtofav.visibility = View.VISIBLE
+                imgbtn_deleteall.visibility = View.GONE
                 //adapter.addFragmentforother(1,FavoriteFagment(),"")
                 //adapter.addFragmentforother(2,DictionaryListFragment(),"")
                 //adapter.addFragmentforother(3,ActivityLogFragment(),"")
                 //adapter.notifyDataSetChanged()
-
             }
             R.id.nav_dictlist -> {
                 fragmentClass = WordListFragment::class.java
+                ratebar_addtofav.rating = 0.0F
+                ratebar_addtofav.visibility = View.VISIBLE
+                imgbtn_deleteall.visibility = View.GONE
             }
             R.id.nav_activitylog -> {
                 fragmentClass = ActivityLogFragment::class.java
+                ratebar_addtofav.rating = 0.0F
+                ratebar_addtofav.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.VISIBLE
             }
-
-
-
         }
+
         try {
             fragment = fragmentClass!!.newInstance() as Fragment
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
+        searchView.setQuery("",true)
+        flContent.visibility = View.VISIBLE
+        rv_search.visibility = View.GONE
 
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
