@@ -65,6 +65,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.wasabeef:picasso-transformations:2.2.1'
     compile 'com.inthecheesefactory.thecheeselibrary:adjustable-imageview:1.0.0'
+    implementation 'com.rengwuxian.materialedittext:library:2.1.4' //dialog add your word
 
     //Room
     kapt "android.arch.lifecycle:compiler:1.1.1"

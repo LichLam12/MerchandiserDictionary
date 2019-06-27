@@ -14,12 +14,18 @@ interface DictionaryDAO {
 
     @Query("SELECT * from dictionaryData WHERE favorite = '1' OR favorite = '3'")
     fun getFavAll() : List<DictionaryEntity>
+    @Query("SELECT * from dictionaryData where id >= :start AND id <= :endd AND (favorite = '1' OR favorite = '3')")
+    fun getFav_ItemBlock(start : Int, endd: Int) : List<DictionaryEntity>
 
     @Query("SELECT * from dictionaryData WHERE favorite = '2' OR favorite = '3'")
     fun getHistoryAll() : List<DictionaryEntity>
+    @Query("SELECT * from dictionaryData where id >= :start AND id <= :endd AND (favorite = '2' OR favorite = '3')")
+    fun getHistory_ItemBlock(start : Int, endd: Int) : List<DictionaryEntity>
 
     @Query("SELECT * from dictionaryData")
     fun getAll() : List<DictionaryEntity>
+    @Query("SELECT * from dictionaryData where id >= :start AND id <= :endd")
+    fun getAll_ItemBlock(start : Int, endd: Int) : List<DictionaryEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(placeEntity : DictionaryEntity)

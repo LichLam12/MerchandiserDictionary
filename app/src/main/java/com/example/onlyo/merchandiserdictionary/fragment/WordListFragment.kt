@@ -9,6 +9,7 @@ import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,9 +35,10 @@ import java.util.*
  * Created by onlyo on 4/10/2019.
  */
 class WordListFragment : Fragment() {
+
     private lateinit var adapterWordList : WordListAdapter
-    var wordList = ArrayList<DictionaryEntity>()
-    var number_of_word = 0
+    var wordList = ArrayList<DictionaryEntity>() //show per 30 words
+    var wordAll = ArrayList<DictionaryEntity>()
     private val compositeDisposable = CompositeDisposable()
 
     private var listener: SendDataToFragmentInterface? = null
@@ -53,27 +55,27 @@ class WordListFragment : Fragment() {
 
         val view  = inflater.inflate(R.layout.fragment_favorite, container, false)
 
-       /* readData_justgetsize()
-        loaddatefromfile()
-        readData()*/
-        //getAllDictionary().execute()
         val getAllDictionary =
         MerchandiseDicDB.getInstance(this@WordListFragment.context).dictionaryDataDao().getAll()
 
+        wordAll = ArrayList<DictionaryEntity>(getAllDictionary)
+
+        val getAllDictionary2 =
+                MerchandiseDicDB.getInstance(this@WordListFragment.context).dictionaryDataDao().getAll_ItemBlock(1,30)
         //how to refer list -> arraylist
-        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
         wordList = wordList_temp
-        wordList.forEach { dsp ->
+        /*wordList.forEach { dsp ->
             Log.e("ket qua2 : ", dsp.toString())
-        }
+        }*/
 
         adapterWordList = WordListAdapter(wordList) { context, word,  spelling, wordkind,meaning
                                                       ,vietmeaning,engmeaning,imagelink,favorite,id, i ->
 
 
             listener?.sendData(word.text.toString(),spelling, wordkind,meaning, vietmeaning, engmeaning, imagelink, favorite,id)
-            Log.e("ket qua3 : ",DictionaryEntity(id,word.text.toString(),spelling,wordkind,meaning,vietmeaning,
-                    engmeaning,imagelink,favorite).toString())
+            //Log.e("ket qua3 : ",DictionaryEntity(id,word.text.toString(),spelling,wordkind,meaning,vietmeaning,
+            //        engmeaning,imagelink,favorite).toString())
 
 
             val b = Bundle()
@@ -108,6 +110,7 @@ class WordListFragment : Fragment() {
         //search (update with allword list)
         val activity_9 = (activity as NavigationDrawerActivity)
         activity_9.wordList = wordList
+        activity_9.wordAll = wordAll
         activity_9.searchList = wordList
         activity_9.updateadaptersearch(wordList)
 
@@ -119,10 +122,36 @@ class WordListFragment : Fragment() {
         view.rv_favorite.layoutManager = linearLayoutManager
         view.rv_favorite.adapter = adapterWordList
         view.rv_favorite.isNestedScrollingEnabled = false
+        //show per 30 items to avoid big data
+        view.rv_favorite.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx:Int, dy:Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!recyclerView.canScrollVertically(1))
+                    onScrolledToBottom()
+            }
+        })
 
         return view
     }
+    //show per 30 items to avoid big data
+    private fun onScrolledToBottom() {
+        if (wordList.size < wordAll.size) {
+            val x: Int
+            val y: Int
+            if (wordAll.size - wordList.size >= 30) {
+                x = wordList.size
+                y = x + 30
+            } else {
+                x = wordList.size
+                y = x + wordAll.size - wordList.size
+            }
+            for (i in x until y) {
+                wordList.add(wordAll.get(i))
+            }
+            adapterWordList.notifyDataSetChanged()
+        }
 
+    }
 
     interface SendDataToFragmentInterface {
         fun sendData(word: String, spelling: String, wordkind: String, meaning:String, vietmeaning: String, engmeaning: String,

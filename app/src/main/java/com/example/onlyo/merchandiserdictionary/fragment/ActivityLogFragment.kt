@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +31,8 @@ import java.util.ArrayList
 class ActivityLogFragment : Fragment() {
 
     private lateinit var adapterHistoryList : HistoryAdapter
-    var wordList = ArrayList<DictionaryEntity>()
+    var wordList = ArrayList<DictionaryEntity>() //show per 30 words
+    var wordAll = ArrayList<DictionaryEntity>()
     lateinit var searchView: SearchView
 
     private var listener: WordListFragment.SendDataToFragmentInterface? = null
@@ -42,7 +44,13 @@ class ActivityLogFragment : Fragment() {
         val getAllDictionary =
                 MerchandiseDicDB.getInstance(this@ActivityLogFragment.context).dictionaryDataDao().getHistoryAll()
 
-        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        wordAll = ArrayList<DictionaryEntity>(getAllDictionary)
+        var wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        if(wordAll.size >= 30) {
+            val getAllDictionary2 =
+                    MerchandiseDicDB.getInstance(this@ActivityLogFragment.context).dictionaryDataDao().getHistory_ItemBlock(1,30)
+            wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
+        }
         wordList = wordList_temp
 
         adapterHistoryList = HistoryAdapter(wordList,{context, word,  spelling, wordkind,meaning
@@ -60,6 +68,7 @@ class ActivityLogFragment : Fragment() {
         //update search list by history list
         val activity_9 = (activity as NavigationDrawerActivity)
         activity_9.wordList = wordList
+        activity_9.wordAll = wordAll
         activity_9.searchList = wordList
         activity_9.updateadaptersearch(wordList)
 
@@ -101,7 +110,34 @@ class ActivityLogFragment : Fragment() {
         view.rv_favorite.layoutManager = linearLayoutManager
         view.rv_favorite.adapter = adapterHistoryList
         view.rv_favorite.isNestedScrollingEnabled = false
+        //show per 30 items to avoid big data
+        view.rv_favorite.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx:Int, dy:Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!recyclerView.canScrollVertically(1))
+                    onScrolledToBottom()
+            }
+        })
         return view
+    }
+
+    //show per 30 items to avoid big data
+    private fun onScrolledToBottom() {
+        if (wordList.size < wordAll.size) {
+            val x: Int
+            val y: Int
+            if (wordAll.size - wordList.size >= 30) {
+                x = wordList.size
+                y = x + 30
+            } else {
+                x = wordList.size
+                y = x + wordAll.size - wordList.size
+            }
+            for (i in x until y) {
+                wordList.add(wordAll.get(i))
+            }
+            adapterHistoryList.notifyDataSetChanged()
+        }
     }
 
     //Click popup menu of any img

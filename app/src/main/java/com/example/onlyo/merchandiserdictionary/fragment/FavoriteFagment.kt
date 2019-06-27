@@ -1,5 +1,6 @@
 package com.example.onlyo.merchandiserdictionary.fragment
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.Environment
@@ -33,7 +34,8 @@ import java.util.*
 class FavoriteFagment : Fragment() {
 
     private lateinit var adapterFavoriteList : FavoriteListAdapter
-    var wordList = ArrayList<DictionaryEntity>()
+    var wordList = ArrayList<DictionaryEntity>() //show per 30 items
+    var wordAll = ArrayList<DictionaryEntity>()
     lateinit var searchView: SearchView
 
     var number_of_word = 0
@@ -46,8 +48,13 @@ class FavoriteFagment : Fragment() {
 
         val getAllDictionary =
                 MerchandiseDicDB.getInstance(this@FavoriteFagment.context).dictionaryDataDao().getFavAll()
-
-        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        wordAll = ArrayList<DictionaryEntity>(getAllDictionary)
+        var wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        if(wordAll.size >= 30) {
+            val getAllDictionary2 =
+                    MerchandiseDicDB.getInstance(this@FavoriteFagment.context).dictionaryDataDao().getFav_ItemBlock(1,30)
+            wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
+        }
         wordList = wordList_temp
 
         adapterFavoriteList = FavoriteListAdapter(wordList,{context, word,  spelling, wordkind,meaning
@@ -65,24 +72,77 @@ class FavoriteFagment : Fragment() {
         //update search list by favorite list
         val activity_9 = (activity as NavigationDrawerActivity)
         activity_9.wordList = wordList
+        activity_9.wordAll = wordAll
         activity_9.searchList = wordList
         activity_9.updateadaptersearch(wordList)
-        /*val linearLayoutManager_search = LinearLayoutManager(this.activity, LinearLayoutManager.VERTICAL, false)
-        //val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        activity_9.rv_search.layoutManager = linearLayoutManager_search
-        activity_9.rv_search.adapter = adapterSearchList
-        activity_9.rv_search.isNestedScrollingEnabled = false
 
-        searchView = activity_9.findViewById(R.id.edt_search)
-        searchView.setOnQueryTextListener(this)
-*/
+        //remove all when click deleteallicon
+        activity_9.imgbtn_deleteall2.setOnClickListener(){
+            val alertDialogBuilder = AlertDialog.Builder(context)
+            alertDialogBuilder.setTitle("Xóa từ yêu thích")
+            alertDialogBuilder
+                    .setMessage("Bạn có muốn xóa tất cả từ yêu thích hay không?")
+                    .setCancelable(false)
+                    .setPositiveButton("Có") { dialog, id ->
+
+                        var update_wordList = ArrayList<DictionaryEntity>()
+
+                        wordList.forEach {
+                            var favorite_temp = "0"
+                            if(it.favorite == "1") favorite_temp = "0"
+                            else if(it.favorite == "3") favorite_temp = "2"
+                            val entity_word = DictionaryEntity(it.id,it.word,it.spelling,it.wordkind,it.meaning,it.imagelink,it.vietmean,it.engmean,favorite_temp)
+                            update_wordList.add(entity_word)
+                        }
+                        activity_9.updateWordList().execute(update_wordList)
+                        wordList.removeAll(wordList)
+                        adapterFavoriteList.notifyDataSetChanged()
+
+                        Toast.makeText(context, "Đã xóa tất cả lịch sử tìm kiếm", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Không") { dialog, id ->
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel()
+                    }
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
 
         val linearLayoutManager = LinearLayoutManager(this.activity, LinearLayoutManager.VERTICAL, false)
         //val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         view.rv_favorite.layoutManager = linearLayoutManager
         view.rv_favorite.adapter = adapterFavoriteList
         view.rv_favorite.isNestedScrollingEnabled = false
+        //show per 30 items to avoid big data
+        view.rv_favorite.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx:Int, dy:Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!recyclerView.canScrollVertically(1))
+                    onScrolledToBottom()
+            }
+        })
         return view
+    }
+
+    //show per 30 items to avoid big data
+    private fun onScrolledToBottom() {
+        if (wordList.size < wordAll.size) {
+            val x: Int
+            val y: Int
+            if (wordAll.size - wordList.size >= 30) {
+                x = wordList.size
+                y = x + 30
+            } else {
+                x = wordList.size
+                y = x + wordAll.size - wordList.size
+            }
+            for (i in x until y) {
+                wordList.add(wordAll.get(i))
+            }
+            adapterFavoriteList.notifyDataSetChanged()
+        }
     }
 
     //Click popup menu of any img

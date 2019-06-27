@@ -13,9 +13,17 @@
             android:icon="@drawable/ic_star_24dp"
             android:title="Từ yêu thích" />
         <item
+            android:id="@+id/nav_yourword"
+            android:icon="@drawable/ic_yourword_24dp"
+            android:title="Từ của bạn" />
+        <item
             android:id="@+id/nav_dictlist"
             android:icon="@drawable/ic_collections_24dp"
             android:title="Danh sách từ điển" />
+        <item
+            android:id="@+id/nav_vietanh"
+            android:icon="@drawable/ic_vietanh_24dp"
+            android:title="Từ điển Việt - Anh" />
         <item
             android:id="@+id/nav_activitylog"
             android:icon="@drawable/ic_history_24dp"

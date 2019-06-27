@@ -7,11 +7,12 @@ import android.content.Context
 
 
 @Database(entities = arrayOf(
-        DictionaryEntity::class), version = 1, exportSchema = false)
+        DictionaryEntity::class, VietAnhEntity::class, YourWordEntity::class), version = 3, exportSchema = false)
 abstract class MerchandiseDicDB : RoomDatabase() {
 
     abstract fun dictionaryDataDao(): DictionaryDAO
-    //abstract fun profileDataDao(): ProfileDAO
+    abstract fun vietanhDataDao(): VietAnhDAO
+    abstract fun yourwordDataDao(): YourWordDAO
 
     companion object {
         private var INSTANCE: MerchandiseDicDB? = null

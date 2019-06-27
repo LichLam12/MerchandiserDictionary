@@ -27,12 +27,14 @@ import android.os.Environment
 import android.speech.RecognizerIntent
 import android.support.v7.widget.AppCompatRatingBar
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.widget.*
 import com.example.onlyo.merchandiserdictionary.Class.Suggestion
 import com.example.onlyo.merchandiserdictionary.adapter.SearchListAdapter
 import com.example.onlyo.merchandiserdictionary.database.DictionaryEntity
 import com.example.onlyo.merchandiserdictionary.database.MerchandiseDicDB
+import com.example.onlyo.merchandiserdictionary.database.VietAnhEntity
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.app_bar_navigation_drawer.*
 
@@ -45,8 +47,6 @@ import kotlin.collections.ArrayList
 class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataToFragmentInterface
         ,NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
-    lateinit var tabLayout: TabLayout
-    lateinit var viewPager: ViewPager
     lateinit var toolbar: Toolbar
     //lateinit var rv_Favorite: RecyclerView
     lateinit var searchView: SearchView
@@ -54,13 +54,17 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
 
     private val compositeDisposable = CompositeDisposable()
 
-    var favList = ArrayList<DictionaryItemDbO>()
     val dictionaryList = ArrayList<DictionaryEntity>()
-    var wordList = ArrayList<DictionaryEntity>()
+    var wordList = ArrayList<DictionaryEntity>() //per 30 items
+    var wordAll = ArrayList<DictionaryEntity>()
     var searchList = ArrayList<DictionaryEntity>()
     lateinit var adapterSearchList : SearchListAdapter
 
-    var number_of_word = 0
+    //vietenglist
+    val vietanhList = ArrayList<VietAnhEntity>()
+
+    var number_of_word = 0 //dictionaryList
+    var number_of_word2 = 0 //vietenglist
 
     //to set rating = 0 when refer to any fragment
     lateinit var ratebar_addtofav: AppCompatRatingBar
@@ -74,6 +78,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        //Giao dien 9: DictionaryFragment
         var fragment: Fragment? = null
         var fragmentClass: Class<*>? = null
         fragmentClass = DictionaryFragment::class.java
@@ -82,20 +87,9 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
-
         val fragmentManager = supportFragmentManager
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
-        //val f = DictionaryFragment()
-       // val b = Bundle()
-        //b.putString("word", "love")
 
-        //f.setArguments(b)
-
-
-        //readData_justgetsize()
-        //loaddatefromfile()
-        //readfile()
 
         //volume icon - speech to text
         imgbtn_volume = findViewById(R.id.imgbtn_volume)
@@ -104,12 +98,24 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         //to set rating = 0 when refer to any fragment
         ratebar_addtofav = this.findViewById<View>(R.id.ratebar_addtofav) as AppCompatRatingBar
 
+        /*//Just run once
+        //dictionary
+        readData_justgetsize()
+        loaddatefromfile()
+        //viet anh
+        readData_justgetsize2()
+        loaddatefromfile2()
+        readfile()*/
 
+        //Search data is all words (show per 30 items)
         val getAllDictionary =
                 MerchandiseDicDB.getInstance(this).dictionaryDataDao().getAll()
-
+        wordAll = ArrayList<DictionaryEntity>(getAllDictionary)
+        //get 21 first words to show in advance
+        val getAllDictionary2 =
+                MerchandiseDicDB.getInstance(this).dictionaryDataDao().getAll_ItemBlock(1,30)
         //how to refer list -> arraylist
-        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary)
+        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
         wordList = wordList_temp
         wordList.forEach { dsp ->
             mSuggestions.add(Suggestion(dsp.word))
@@ -174,55 +180,21 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         rv_search.layoutManager = linearLayoutManager
         rv_search.adapter = adapterSearchList
         rv_search.isNestedScrollingEnabled = false
+        //show per 21 items to avoid big data
+        rv_search.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx:Int, dy:Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!recyclerView.canScrollVertically(1))
+                    onScrolledToBottom()
+            }
+        })
 
         searchView = findViewById<SearchView>(R.id.edt_search)
         searchView.setOnQueryTextListener(this)
 
-        /*searchView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                hideKeyboard(v)
-            } else {
-                //Log.d("focus", "focused")
-            }
-
-        }*/
-        /*searchView.setOnQueryChangeListener(object: FloatingSearchView.OnQueryChangeListener {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-            override fun onSearchTextChanged(oldQuery:String, newQuery:String) {
-                if (oldQuery != "" && newQuery == "")
-                {
-                    searchView.clearSuggestions()
-                }
-                else
-                {
-                    searchView.showProgress()
-                    searchView.swapSuggestions(getSuggestion(newQuery))
-                    searchView.hideProgress()
-                }
-            }
-        })
-        searchView.setOnFocusChangeListener(object:FloatingSearchView.OnFocusChangeListener {
-            override fun onFocus() {
-                searchView.showProgress()
-                searchView.swapSuggestions(getSuggestion(searchView.getQuery()))
-                searchView.hideProgress()
-            }
-            override fun onFocusCleared() {
-            }
-        })
-        searchView.setOnSearchListener(object:FloatingSearchView.OnSearchListener {
-            override fun onSuggestionClicked(searchSuggestion: SearchSuggestion) {
-                val suggestion = searchSuggestion as DictionaryEntity
-                Toast.makeText(getApplicationContext(), "Ban vua chon " + suggestion.engmean, Toast.LENGTH_SHORT).show()
-            }
-            override fun onSearchAction(currentQuery:String) {
-            }
-        })*/
-
-        //searchView.attachNavigationDrawerToMenuButton(drawer_layout)
 
 
+        //add navigationdrawer
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -230,10 +202,30 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
 
         nav_view.setNavigationItemSelectedListener(this)
     }
+    //show per 30 items to avoid big data
+    private fun onScrolledToBottom() {
+        if (wordList.size < wordAll.size) {
+            val x: Int
+            val y: Int
+            if (wordAll.size - wordList.size >= 30) {
+                x = wordList.size
+                y = x + 30
+            } else {
+                x = wordList.size
+                y = x + wordAll.size - wordList.size
+            }
+            for (i in x until y) {
+                wordList.add(wordAll.get(i))
+            }
+            adapterSearchList.notifyDataSetChanged()
+        }
+
+    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return true
     }
+    //when search tab's data has any change
     override fun onQueryTextChange(newText: String): Boolean {
         Log.e("search list : ",newText.toString())
 
@@ -259,9 +251,9 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
                 }
             }
             wordList = searchList_temp
-            for (wp in wordList) {
+            /*for (wp in wordList) {
                 Log.e("search list2 : ",wp.word.toString())
-            }
+            }*/
             /*if (charText.length == 0) {
                 Log.e("search list2 : ",1.toString())
                 wordList.addAll(searchList)
@@ -280,7 +272,9 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         return false
     }
 
-    fun updateadaptersearch(wordList:ArrayList<DictionaryEntity>){adapterSearchList.filter(wordList)}
+    fun updateadaptersearch(wordList:ArrayList<DictionaryEntity>){
+        adapterSearchList.filter(wordList)
+    }
 
 
     private val mSuggestions = ArrayList<Suggestion>()
@@ -320,14 +314,6 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
 
         val fragment = DictionaryFragment()
         (fragment as DictionaryFragment).showInfor(word,spelling,wordkind,vietmeaning,engmeaning,imagelink,favorite)
-
-        /*val dictionaryFragment = supportFragmentManager.findFragmentById(R.id.nav_search) as DictionaryFragment
-
-        if (dictionaryFragment != null || dictionaryFragment!!.isInLayout()) { // kiem tra fragment can truyen data den co thuc su ton tai va dang hien
-            dictionaryFragment!!.showInfor(stt, word)
-        } else {
-            Toast.makeText(applicationContext, "Fragment is not exist", Toast.LENGTH_LONG).show()
-        }*/
     }
 
     fun getSpeechInput() {
@@ -371,11 +357,14 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
 
     private fun loaddatefromfile(){
         for (index in 1..number_of_word){
-            //favList.add(DictionaryItemDbO("","","","","","","0"))
             dictionaryList.add(DictionaryEntity(index.toString(),"","","","","","","","0"))
         }
-        //favList.add(FavoriteDbO("love","[lʌv]","danh từ",""
-        //      ,"","","0"))
+    }
+
+    private fun loaddatefromfile2(){
+        for (index in 1..number_of_word2){
+            vietanhList.add(VietAnhEntity(index,"",""))
+        }
     }
     /**
      * Hàm đọc tập tin trong Android
@@ -405,22 +394,9 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         var file7 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/favorite.txt")
         var file8 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/meaning.txt")
 
-        /*when (feildkind) {
-            1 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
-            2 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/spelling.txt")
-            3 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/wordkind.txt")
-            4 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/image.txt")
-            5 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/vietmean.txt")
-            6 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/engmean.txt")
-            7 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/favorite.txt")
-        }*/
+        //viet eng
+        var file9 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/vviet.txt")
+        var file10 = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/veng.txt")
 
         try {
             // Make sure the Pictures directory exists.
@@ -508,13 +484,35 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
             }
             }
 
-            dictionaryList.forEach{
+            //print all ditionary of dictionaryList
+            /*dictionaryList.forEach{
                 Log.e("ket qua : ",it.toString())
                // MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().insert(it)
+            }*/
+
+            //read 2 files of vietanhlist
+            val bufferedReader9 = file9.bufferedReader()
+            count = 0
+            bufferedReader9.useLines { lines -> lines.forEach {
+                vietanhList[count++].vietword = it
+            }
             }
 
-            insertAllDictionary().execute(dictionaryList)
+            val bufferedReader10 = file10.bufferedReader()
+            count = 0
+            bufferedReader10.useLines { lines -> lines.forEach {
+                vietanhList[count++].engword = it
+            }
+            }
 
+            //print all viet anh files of vietanhlist
+            /*vietanhList.forEach{
+                Log.e("ket qua : ",it.toString())
+                // MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().insert(it)
+            }*/
+
+            insertAllDictionary().execute(dictionaryList)
+            insertAllVietAnh().execute(vietanhList)
             //file.createNewFile()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -532,9 +530,10 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
 
         //get all places from database room
         val getAllDictionary = MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).dictionaryDataDao().getAll()
-        getAllDictionary.forEach { dsp ->
+        /*getAllDictionary.forEach { dsp ->
             Log.e("ket qua2 : ", dsp.toString())
-        }
+        }*/
+
         // Probably, you already know that all UI code is done on Android Main thread.
         // RxJava is java library and it does not know about Android Main thread. That is the reason why we use RxAndroid.
         // RxAndroid gives us the possibility to choose Android Main thread as the thread where our code will be executed.
@@ -576,31 +575,21 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         }
     }
 
+    inner class insertAllVietAnh() : AsyncTask<ArrayList<VietAnhEntity>, Void, Void>() {
+        override fun doInBackground(vararg params : ArrayList<VietAnhEntity>): Void? {
+            MerchandiseDicDB.getInstance(this@NavigationDrawerActivity).vietanhDataDao().insertAllVietAnh(params[0])
+            //getDataFromLocal()
+            return null
+        }
+    }
+
     @Throws(IOException::class)
     private fun readData_justgetsize() {
         var data = ""
 
         val path = Environment.getDataDirectory()
         val file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
-        /*when (feildkind) {
-            1 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/word.txt")
-            2 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/spelling.txt")
-            3 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/wordkind.txt")
-            4 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/image.txt")
-            5 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/vietmean.txt")
-            6 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/engmean.txt")
-            7 ->
-                file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/favorite.txt")
-        *//*else -> { // Note the block
-            print("x is neither 1 nor 2")
-        }*//*
-        }*/
+
         try {
             // Make sure the Pictures directory exists.
             path.mkdirs()
@@ -615,9 +604,31 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
-        // return data
     }
+
+    @Throws(IOException::class)
+    private fun readData_justgetsize2() {
+        var data = ""
+
+        val path = Environment.getDataDirectory()
+        val file = File(path, "/data/com.example.onlyo.merchandiserdictionary/files/vviet.txt")
+
+        try {
+            // Make sure the Pictures directory exists.
+            path.mkdirs()
+            val bufferedReader = file.bufferedReader()
+
+            val lineList = mutableListOf<String>()
+
+            bufferedReader.useLines { lines -> lines.forEach { lineList.add(it) } }
+            number_of_word2 = lineList.size
+
+            //file.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
 
     //Hide ban phim
     fun hideKeyboard(view: View) {
@@ -664,8 +675,15 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
             R.id.nav_search -> {
                 fragmentClass = DictionaryFragment::class.java
                 ratebar_addtofav.rating = 0.0F
+                //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.VISIBLE
                 imgbtn_deleteall.visibility = View.GONE
+                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_addyourword.visibility = View.GONE
+
+                edt_search.visibility = View.VISIBLE
+                edt_vietanhsearch.visibility = View.GONE
+                edt_yourwordsearch.visibility = View.GONE
                 // Handle the camera action
                 //val homeIntent = Intent(this@NavigationDrawerActivity, NavigationDrawerActivity::class.java)
                 //startActivity(homeIntent)
@@ -677,8 +695,32 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
             R.id.nav_favorite -> {
                 fragmentClass = FavoriteFagment::class.java
                 ratebar_addtofav.rating = 0.0F
+                //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.VISIBLE
                 imgbtn_deleteall.visibility = View.GONE
+                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_addyourword.visibility = View.GONE
+
+                edt_search.visibility = View.VISIBLE
+                edt_vietanhsearch.visibility = View.GONE
+                edt_yourwordsearch.visibility = View.GONE
+                //adapter.addFragmentforother(1,FavoriteFagment(),"")
+                //adapter.addFragmentforother(2,DictionaryListFragment(),"")
+                //adapter.addFragmentforother(3,ActivityLogFragment(),"")
+                //adapter.notifyDataSetChanged()
+            }
+            R.id.nav_yourword -> {
+                fragmentClass = YourWordFragment::class.java
+                ratebar_addtofav.rating = 0.0F
+                //vi tri cuoi - 4 icon thay phien nhau
+                ratebar_addtofav.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE
+                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_addyourword.visibility = View.VISIBLE
+
+                edt_search.visibility = View.GONE
+                edt_vietanhsearch.visibility = View.GONE
+                edt_yourwordsearch.visibility = View.VISIBLE
                 //adapter.addFragmentforother(1,FavoriteFagment(),"")
                 //adapter.addFragmentforother(2,DictionaryListFragment(),"")
                 //adapter.addFragmentforother(3,ActivityLogFragment(),"")
@@ -687,14 +729,41 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
             R.id.nav_dictlist -> {
                 fragmentClass = WordListFragment::class.java
                 ratebar_addtofav.rating = 0.0F
+                //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.VISIBLE
                 imgbtn_deleteall.visibility = View.GONE
+                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_addyourword.visibility = View.GONE
+
+                edt_search.visibility = View.VISIBLE
+                edt_vietanhsearch.visibility = View.GONE
+                edt_yourwordsearch.visibility = View.GONE
+            }
+            R.id.nav_vietanh -> {
+                fragmentClass = VietAnhFragment::class.java
+                ratebar_addtofav.rating = 0.0F
+                //vi tri cuoi - 4 icon thay phien nhau
+                ratebar_addtofav.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE
+                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_addyourword.visibility = View.GONE
+
+                edt_search.visibility = View.GONE
+                edt_vietanhsearch.visibility = View.VISIBLE
+                edt_yourwordsearch.visibility = View.GONE
             }
             R.id.nav_activitylog -> {
                 fragmentClass = ActivityLogFragment::class.java
                 ratebar_addtofav.rating = 0.0F
+                //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.GONE
                 imgbtn_deleteall.visibility = View.VISIBLE
+                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_addyourword.visibility = View.GONE
+                //thanh search - co 3 loại thanh search
+                edt_search.visibility = View.VISIBLE
+                edt_vietanhsearch.visibility = View.GONE
+                edt_yourwordsearch.visibility = View.GONE
             }
         }
 
