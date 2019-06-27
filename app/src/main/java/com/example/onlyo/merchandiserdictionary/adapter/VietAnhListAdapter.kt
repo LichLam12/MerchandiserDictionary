@@ -41,12 +41,10 @@ class VietAnhListAdapter (private var wordList: ArrayList<VietAnhEntity>,
         val tv_vietword = itemView.findViewById<View>(R.id.tv_vietword) as TextView
         val tv_engword = itemView.findViewById<View>(R.id.tv_engword) as TextView
         val imgv_volume = itemView.findViewById<View>(R.id.imgv_volume) as ImageView
-        val imgv_favword = itemView.findViewById<View>(R.id.imgv_favword) as ImageView
 
         fun bind(word : VietAnhEntity) {
             tv_vietword.text = word.vietword
             tv_engword.text = word.engword
-            imgv_favword.setBackgroundResource(R.drawable.ic_vietanh_24dp)
 
             itemView.imgv_volume.setOnClickListener {
                 onItemClickListener(tv_engword.text as String) }

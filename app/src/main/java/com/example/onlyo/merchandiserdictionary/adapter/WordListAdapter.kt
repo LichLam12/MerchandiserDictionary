@@ -46,7 +46,7 @@ class WordListAdapter (private var wordList: ArrayList<DictionaryEntity>,
 
         fun bind(fav : DictionaryEntity) {
             tv_favword.text = fav.word
-            imgv_favword.setBackgroundResource(R.drawable.ic_history_24dp)
+            imgv_favword.setBackgroundResource(R.drawable.ic_collections_24dp)
             //Lập trình bất đồng bộ
             //Set cho imgView_transportation trên recycleviewer 1 lắng nghe (nhận id bất kỳ để nhận dạng loại ptien)
             itemView.tv_favword.setOnClickListener {
