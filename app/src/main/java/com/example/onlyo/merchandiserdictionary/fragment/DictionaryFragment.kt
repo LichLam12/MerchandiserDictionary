@@ -80,8 +80,8 @@ class DictionaryFragment : Fragment(){
             var spelling = bundle.getString("spelling")
             word_spelling = spelling
             if(spelling == "0") spelling = ""
-            else spelling = " ["+spelling+"]"
-            val sourceString = "<b>$word</b>$spelling"
+            else spelling = "\n["+spelling+"]"
+            val sourceString = "<b>$word</b><br/>$spelling"
             view.tv_word.setText(Html.fromHtml(sourceString))
 
             var wordkind = bundle.getString("wordkind")
