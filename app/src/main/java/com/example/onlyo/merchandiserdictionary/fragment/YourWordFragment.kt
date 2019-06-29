@@ -1,11 +1,15 @@
 package com.example.onlyo.merchandiserdictionary.fragment
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
@@ -14,6 +18,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
@@ -43,6 +48,8 @@ class YourWordFragment : Fragment(), SearchView.OnQueryTextListener {
     //lateinit var imgv_volume: ImageView
 
     lateinit var searchView: SearchView
+
+    lateinit var imgbtn_volume: ImageButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -93,11 +100,14 @@ class YourWordFragment : Fragment(), SearchView.OnQueryTextListener {
         searchView = activity_9.edt_yourwordsearch
         searchView.setOnQueryTextListener(this)
 
-
         //show add your word dialog when click "+"
         activity_9.imgbtn_addyourword.setOnClickListener(){
             showDialogAddYourWord()
         }
+
+        //volume icon - speech to text
+        imgbtn_volume = activity_9.imgbtn_yourword_volume
+        imgbtn_volume.setOnClickListener{getSpeechInput()}
 
         //add layout
         val linearLayoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL,
@@ -246,5 +256,29 @@ class YourWordFragment : Fragment(), SearchView.OnQueryTextListener {
             textToSpeech!!.shutdown()
         }
         super.onDestroy()
+    }
+
+    fun getSpeechInput() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US)
+
+        if (intent.resolveActivity(this.context.packageManager) != null) {
+            startActivityForResult(intent, 10)
+        } else {
+            Toast.makeText(this.context, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show()
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            10 -> if (resultCode == Activity.RESULT_OK && data != null)
+            {
+                val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                //searchView.setText(result[0])
+                searchView.setQuery(result[0],false)
+            }
+        }
     }
 }

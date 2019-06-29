@@ -23,8 +23,10 @@ import com.example.onlyo.merchandiserdictionary.fragment.*
 import android.support.v4.app.Fragment
 import com.example.onlyo.merchandiserdictionary.model.DictionaryItemDbO
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Environment
 import android.speech.RecognizerIntent
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.AppCompatRatingBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -192,8 +194,6 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         searchView = findViewById<SearchView>(R.id.edt_search)
         searchView.setOnQueryTextListener(this)
 
-
-
         //add navigationdrawer
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -328,6 +328,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
             Toast.makeText(this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -336,6 +337,16 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
                 val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 //searchView.setText(result[0])
                 searchView.setQuery(result[0],false)
+ /*               val fragment = (fragmentManager.findFragmentByTag("vietanhfragment").activity)
+                val fragment2 = (fragmentManager.findFragmentByTag("yourwordfragment").activity)
+
+                if(fragment.edt_vietanhsearch.visibility == View.VISIBLE){
+                    fragment.edt_vietanhsearch.setQuery(result[0],false)
+                } else if(fragment2.edt_yourwordsearch.visibility == View.VISIBLE){
+                    fragment2.edt_yourwordsearch.setQuery(result[0],false)
+                }*/
+
+
             }
         }
     }
@@ -667,23 +678,28 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         val id = item.itemId
         var fragment: Fragment? = null
         var fragmentClass: Class<*>? = null
-
+        var fragmentTag = ""
         //tv_word = this.findViewById<View>(R.id.tv_word) as TextView
 
 
         when (item.itemId) {
             R.id.nav_search -> {
+                fragmentTag = "dictionaryfragment"
                 fragmentClass = DictionaryFragment::class.java
                 ratebar_addtofav.rating = 0.0F
                 //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.VISIBLE
-                imgbtn_deleteall.visibility = View.GONE
-                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE //history
+                imgbtn_deleteall2.visibility = View.GONE //favorite
                 imgbtn_addyourword.visibility = View.GONE
 
                 edt_search.visibility = View.VISIBLE
                 edt_vietanhsearch.visibility = View.GONE
                 edt_yourwordsearch.visibility = View.GONE
+
+                imgbtn_volume.visibility = View.VISIBLE
+                imgbtn_vietanh_volume.visibility = View.GONE
+                imgbtn_yourword_volume.visibility = View.GONE
                 // Handle the camera action
                 //val homeIntent = Intent(this@NavigationDrawerActivity, NavigationDrawerActivity::class.java)
                 //startActivity(homeIntent)
@@ -693,77 +709,102 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
                 //viewPager.setCurrentItem(0,true
             }
             R.id.nav_favorite -> {
+                fragmentTag = "favlistfragment"
                 fragmentClass = FavoriteFagment::class.java
                 ratebar_addtofav.rating = 0.0F
                 //vi tri cuoi - 4 icon thay phien nhau
-                ratebar_addtofav.visibility = View.VISIBLE
-                imgbtn_deleteall.visibility = View.GONE
-                imgbtn_deleteall2.visibility = View.GONE
+                ratebar_addtofav.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE //history
+                imgbtn_deleteall2.visibility = View.VISIBLE //favorite
                 imgbtn_addyourword.visibility = View.GONE
 
                 edt_search.visibility = View.VISIBLE
                 edt_vietanhsearch.visibility = View.GONE
                 edt_yourwordsearch.visibility = View.GONE
+
+                imgbtn_volume.visibility = View.VISIBLE
+                imgbtn_vietanh_volume.visibility = View.GONE
+                imgbtn_yourword_volume.visibility = View.GONE
                 //adapter.addFragmentforother(1,FavoriteFagment(),"")
                 //adapter.addFragmentforother(2,DictionaryListFragment(),"")
                 //adapter.addFragmentforother(3,ActivityLogFragment(),"")
                 //adapter.notifyDataSetChanged()
             }
             R.id.nav_yourword -> {
+                fragmentTag = "yourwordfragment"
                 fragmentClass = YourWordFragment::class.java
                 ratebar_addtofav.rating = 0.0F
                 //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.GONE
-                imgbtn_deleteall.visibility = View.GONE
-                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE //history
+                imgbtn_deleteall2.visibility = View.GONE //favorite
                 imgbtn_addyourword.visibility = View.VISIBLE
 
                 edt_search.visibility = View.GONE
                 edt_vietanhsearch.visibility = View.GONE
                 edt_yourwordsearch.visibility = View.VISIBLE
+
+                imgbtn_volume.visibility = View.GONE
+                imgbtn_vietanh_volume.visibility = View.GONE
+                imgbtn_yourword_volume.visibility = View.VISIBLE
                 //adapter.addFragmentforother(1,FavoriteFagment(),"")
                 //adapter.addFragmentforother(2,DictionaryListFragment(),"")
                 //adapter.addFragmentforother(3,ActivityLogFragment(),"")
                 //adapter.notifyDataSetChanged()
             }
             R.id.nav_dictlist -> {
+                fragmentTag = "wordlistfragment"
                 fragmentClass = WordListFragment::class.java
                 ratebar_addtofav.rating = 0.0F
                 //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.VISIBLE
-                imgbtn_deleteall.visibility = View.GONE
-                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE //history
+                imgbtn_deleteall2.visibility = View.GONE //favorite
                 imgbtn_addyourword.visibility = View.GONE
 
                 edt_search.visibility = View.VISIBLE
                 edt_vietanhsearch.visibility = View.GONE
                 edt_yourwordsearch.visibility = View.GONE
+
+                imgbtn_volume.visibility = View.VISIBLE
+                imgbtn_vietanh_volume.visibility = View.GONE
+                imgbtn_yourword_volume.visibility = View.GONE
             }
             R.id.nav_vietanh -> {
+                fragmentTag = "vietanhfragment"
                 fragmentClass = VietAnhFragment::class.java
                 ratebar_addtofav.rating = 0.0F
                 //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.GONE
-                imgbtn_deleteall.visibility = View.GONE
-                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.GONE //history
+                imgbtn_deleteall2.visibility = View.GONE //favorite
                 imgbtn_addyourword.visibility = View.GONE
 
                 edt_search.visibility = View.GONE
                 edt_vietanhsearch.visibility = View.VISIBLE
                 edt_yourwordsearch.visibility = View.GONE
+
+                imgbtn_volume.visibility = View.GONE
+                imgbtn_vietanh_volume.visibility = View.VISIBLE
+                imgbtn_yourword_volume.visibility = View.GONE
             }
             R.id.nav_activitylog -> {
+                fragmentTag = "activitylogfragment"
                 fragmentClass = ActivityLogFragment::class.java
                 ratebar_addtofav.rating = 0.0F
                 //vi tri cuoi - 4 icon thay phien nhau
                 ratebar_addtofav.visibility = View.GONE
-                imgbtn_deleteall.visibility = View.VISIBLE
-                imgbtn_deleteall2.visibility = View.GONE
+                imgbtn_deleteall.visibility = View.VISIBLE //history
+                imgbtn_deleteall2.visibility = View.GONE //favorite
                 imgbtn_addyourword.visibility = View.GONE
                 //thanh search - co 3 loại thanh search
                 edt_search.visibility = View.VISIBLE
                 edt_vietanhsearch.visibility = View.GONE
                 edt_yourwordsearch.visibility = View.GONE
+
+                imgbtn_volume.visibility = View.VISIBLE
+                imgbtn_vietanh_volume.visibility = View.GONE
+                imgbtn_yourword_volume.visibility = View.GONE
             }
         }
 
@@ -777,7 +818,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         rv_search.visibility = View.GONE
 
         val fragmentManager = supportFragmentManager
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit()
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment,fragmentTag).commit()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true

@@ -1,8 +1,12 @@
 package com.example.onlyo.merchandiserdictionary.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -10,8 +14,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SearchView
+import android.widget.Toast
 import com.example.onlyo.merchandiserdictionary.R
 import com.example.onlyo.merchandiserdictionary.activity.NavigationDrawerActivity
 import com.example.onlyo.merchandiserdictionary.adapter.VietAnhListAdapter
@@ -38,6 +44,8 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
     //lateinit var imgv_volume: ImageView
 
     lateinit var searchView: SearchView
+
+    lateinit var imgbtn_volume: ImageButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -83,6 +91,12 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
         /*for (index in 0..(number_of_word-1)){
             println(">  " + wordList[index].word)
         }*/
+
+        //volume icon - speech to text
+        imgbtn_volume = activity_9.imgbtn_vietanh_volume
+        imgbtn_volume.setOnClickListener{getSpeechInput()}
+
+
         val linearLayoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL,
                 false).apply { isAutoMeasureEnabled = true }
         //val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -165,5 +179,31 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
             textToSpeech!!.shutdown()
         }
         super.onDestroy()
+    }
+
+
+    fun getSpeechInput() {
+
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+
+        if (intent.resolveActivity(this.context.packageManager) != null) {
+            startActivityForResult(intent, 10)
+        } else {
+            Toast.makeText(this.context, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show()
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            10 -> if (resultCode == Activity.RESULT_OK && data != null)
+            {
+                val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                //searchView.setText(result[0])
+                searchView.setQuery(result[0],false)
+            }
+        }
     }
 }
