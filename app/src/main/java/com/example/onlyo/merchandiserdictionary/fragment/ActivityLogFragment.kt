@@ -49,7 +49,7 @@ class ActivityLogFragment : Fragment() {
         if(wordAll.size >= 30) {
             val getAllDictionary2 =
                     MerchandiseDicDB.getInstance(this@ActivityLogFragment.context).dictionaryDataDao().getHistory_ItemBlock(1,30)
-            wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
+            wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary.subList(1,30))
         }
         wordList = wordList_temp
 
@@ -69,7 +69,7 @@ class ActivityLogFragment : Fragment() {
         val activity_9 = (activity as NavigationDrawerActivity)
         activity_9.wordList = wordList
         activity_9.wordAll = wordAll
-        activity_9.searchList = wordList
+        activity_9.searchList = wordAll
         activity_9.updateadaptersearch(wordList)
 
         //remove all when click deleteallicon
@@ -133,7 +133,7 @@ class ActivityLogFragment : Fragment() {
                 x = wordList.size
                 y = x + wordAll.size - wordList.size
             }
-            for (i in x until y) {
+            for (i in x+1 until y) {
                 wordList.add(wordAll.get(i))
             }
             adapterHistoryList.notifyDataSetChanged()

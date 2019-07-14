@@ -7,15 +7,19 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.Fragment
+import android.support.v4.view.GravityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import com.example.onlyo.merchandiserdictionary.R
+import com.example.onlyo.merchandiserdictionary.R.id.drawer_layout
 import com.example.onlyo.merchandiserdictionary.activity.NavigationDrawerActivity
 import com.example.onlyo.merchandiserdictionary.adapter.FavoriteListAdapter
 import com.example.onlyo.merchandiserdictionary.adapter.WordListAdapter
@@ -63,7 +67,7 @@ class WordListFragment : Fragment() {
         val getAllDictionary2 =
                 MerchandiseDicDB.getInstance(this@WordListFragment.context).dictionaryDataDao().getAll_ItemBlock(1,30)
         //how to refer list -> arraylist
-        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
+        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary.subList(1,30))
         wordList = wordList_temp
         /*wordList.forEach { dsp ->
             Log.e("ket qua2 : ", dsp.toString())
@@ -111,9 +115,9 @@ class WordListFragment : Fragment() {
         val activity_9 = (activity as NavigationDrawerActivity)
         activity_9.wordList = wordList
         activity_9.wordAll = wordAll
-        activity_9.searchList = wordList
-        activity_9.updateadaptersearch(wordList)
-
+        activity_9.searchList = wordAll
+        activity_9.updateadaptersearch2(wordList)
+        activity_9.onBackPressed() //or start new fragment
         /*for (index in 0..(number_of_word-1)){
             println(">  " + wordList[index].word)
         }*/
@@ -145,18 +149,37 @@ class WordListFragment : Fragment() {
                 x = wordList.size
                 y = x + wordAll.size - wordList.size
             }
-            for (i in x until y) {
+            for (i in x+1 until y) {
                 wordList.add(wordAll.get(i))
             }
             adapterWordList.notifyDataSetChanged()
         }
-
     }
+
+    /*fun onBackPressed() {
+        if (!shouldAllowBack()) {
+            doSomething()
+        } else {
+            super.onBackPressed()
+        }
+    }*/
 
     interface SendDataToFragmentInterface {
         fun sendData(word: String, spelling: String, wordkind: String, meaning:String, vietmeaning: String, engmeaning: String,
                      imagelink: String ,favorite: String,id:String)
     }
 
+    /*fun onKeyDown(keyCode:Int, event: KeyEvent): Boolean {
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+            Toast.makeText(this.context, "back press",
+                    Toast.LENGTH_LONG).show()
+
+        return false
+    }
+    override fun onBackPressed() {
+        val intent = Intent(this.context, NavigationDrawerActivity::class.java) //this activity will be this fragment's father
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+    }*/
 
 }

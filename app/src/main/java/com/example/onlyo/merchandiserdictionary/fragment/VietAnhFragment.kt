@@ -58,7 +58,7 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
         //how to refer list -> arraylist
         val getAllDictionary2 =
                 MerchandiseDicDB.getInstance(this@VietAnhFragment.context).vietanhDataDao().getAll_ItemBlock(1,21)
-        val wordList_temp = ArrayList<VietAnhEntity>(getAllDictionary)
+        val wordList_temp = ArrayList<VietAnhEntity>(getAllDictionary.subList(1,21))
         wordList = wordList_temp
         searchList = wordAll
 
@@ -127,7 +127,7 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
                 x = wordList.size
                 y = x + wordAll.size - wordList.size
             }
-            for (i in x until y) {
+            for (i in x+1 until y) {
                 wordList.add(wordAll.get(i))
             }
             adapterVietAnhList.notifyDataSetChanged()
@@ -152,7 +152,7 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
             val searchList_temp = ArrayList<VietAnhEntity>()
             for (wp in searchList) {
                 //Log.e("search list2 : ",wp.toString())
-                if (wp.vietword.toLowerCase(Locale.getDefault()).contains(charText)) {
+                if (wp.engword.toLowerCase(Locale.getDefault()).contains(charText)) {
                     searchList_temp.add(wp)
                     //wordList.add(wp)
                     //Log.e("search list2 : ",wp.word.toString())

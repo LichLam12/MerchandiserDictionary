@@ -100,14 +100,14 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         //to set rating = 0 when refer to any fragment
         ratebar_addtofav = this.findViewById<View>(R.id.ratebar_addtofav) as AppCompatRatingBar
 
-        /*//Just run once
+        //Just run once
         //dictionary
         readData_justgetsize()
         loaddatefromfile()
         //viet anh
         readData_justgetsize2()
         loaddatefromfile2()
-        readfile()*/
+        readfile()
 
         //Search data is all words (show per 30 items)
         val getAllDictionary =
@@ -117,7 +117,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         val getAllDictionary2 =
                 MerchandiseDicDB.getInstance(this).dictionaryDataDao().getAll_ItemBlock(1,30)
         //how to refer list -> arraylist
-        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary2)
+        val wordList_temp = ArrayList<DictionaryEntity>(getAllDictionary.subList(1,30))
         wordList = wordList_temp
         wordList.forEach { dsp ->
             mSuggestions.add(Suggestion(dsp.word))
@@ -214,7 +214,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
                 x = wordList.size
                 y = x + wordAll.size - wordList.size
             }
-            for (i in x until y) {
+            for (i in x+1 until y) {
                 wordList.add(wordAll.get(i))
             }
             adapterSearchList.notifyDataSetChanged()
@@ -275,7 +275,9 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
     fun updateadaptersearch(wordList:ArrayList<DictionaryEntity>){
         adapterSearchList.filter(wordList)
     }
-
+    fun updateadaptersearch2(wordList:ArrayList<DictionaryEntity>){
+        adapterSearchList.notifyDataSetChanged()
+    }
 
     private val mSuggestions = ArrayList<Suggestion>()
     //Search

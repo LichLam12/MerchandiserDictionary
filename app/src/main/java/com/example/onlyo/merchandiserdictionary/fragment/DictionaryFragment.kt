@@ -15,6 +15,7 @@ import android.os.Build
 import android.view.*
 import android.speech.tts.TextToSpeech
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.app.SharedElementCallback
 import android.support.v7.widget.AppCompatRatingBar
 import android.widget.TextView
 import android.widget.Toast
@@ -93,12 +94,29 @@ class DictionaryFragment : Fragment(){
 
             var engmeaning = bundle.getString("engmeaning")
             var vietmeaning = bundle.getString("vietmeaning")
-            if(engmeaning != "0" && vietmeaning != "0"){
-                view.tv_engmeaning.visibility = View.VISIBLE
-                view.tv_vietmeaning.visibility = View.VISIBLE
-                view.tv_engmeaning.setText(engmeaning)
-                view.tv_vietmeaning.setText(vietmeaning)
-            } else {
+            if((engmeaning != "0" && vietmeaning != "0") || (engmeaning != null && vietmeaning != null)
+            || (engmeaning != "" && vietmeaning != "")){
+                if(engmeaning == "0" && vietmeaning == "0"){
+                    view.tv_engmeaning.visibility = View.GONE
+                    view.tv_vietmeaning.visibility = View.GONE
+                } else if (engmeaning != "0" && vietmeaning != "0") {
+                    view.tv_engmeaning.visibility = View.VISIBLE
+                    view.tv_vietmeaning.visibility = View.VISIBLE
+                    view.tv_engmeaning.setText(engmeaning)
+                    view.tv_vietmeaning.setText(vietmeaning)
+                } else if(engmeaning == "0"){
+                    view.tv_engmeaning.visibility = View.GONE
+                    view.tv_vietmeaning.visibility = View.VISIBLE
+                    //view.tv_engmeaning.setText(engmeaning)
+                    view.tv_vietmeaning.setText(vietmeaning)
+                } else if(vietmeaning == "0") {
+                    view.tv_engmeaning.visibility = View.VISIBLE
+                    view.tv_vietmeaning.visibility = View.GONE
+                    view.tv_engmeaning.setText(engmeaning)
+                    //view.tv_vietmeaning.setText(vietmeaning)
+                }
+            }
+            else {
                 view.tv_engmeaning.visibility = View.GONE
                 view.tv_vietmeaning.visibility = View.GONE
             }
