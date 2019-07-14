@@ -47,7 +47,7 @@ class VietAnhListAdapter (private var wordList: ArrayList<VietAnhEntity>,
             tv_engword.text = word.engword
 
             itemView.imgv_volume.setOnClickListener {
-                onItemClickListener(tv_engword.text as String) }
+                onItemClickListener(tv_vietword.text as String) }
         }
     }
 
