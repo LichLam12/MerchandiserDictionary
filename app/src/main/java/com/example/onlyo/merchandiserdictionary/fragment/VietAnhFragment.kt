@@ -76,7 +76,7 @@ class VietAnhFragment : Fragment(), SearchView.OnQueryTextListener {
                 {
                     word_speak = it
                     word_speakOut(word_speak)
-                    view.imgv_volume.setOnClickListener{word_speakOut(word_speak)}
+                    //view.imgv_volume.setOnClickListener{word_speakOut(word_speak)}
                 })
 
 

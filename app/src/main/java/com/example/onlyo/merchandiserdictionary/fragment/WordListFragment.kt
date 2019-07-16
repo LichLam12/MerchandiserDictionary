@@ -117,7 +117,7 @@ class WordListFragment : Fragment() {
         activity_9.wordAll = wordAll
         activity_9.searchList = wordAll
         activity_9.updateadaptersearch2(wordList)
-        activity_9.onBackPressed() //or start new fragment
+        //activity_9.onBackPressed() //or start new fragment
         /*for (index in 0..(number_of_word-1)){
             println(">  " + wordList[index].word)
         }*/

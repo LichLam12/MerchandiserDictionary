@@ -100,14 +100,14 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         //to set rating = 0 when refer to any fragment
         ratebar_addtofav = this.findViewById<View>(R.id.ratebar_addtofav) as AppCompatRatingBar
 
-        //Just run once
+        /*//Just run once
         //dictionary
         readData_justgetsize()
         loaddatefromfile()
         //viet anh
         readData_justgetsize2()
         loaddatefromfile2()
-        readfile()
+        readfile()*/
 
         //Search data is all words (show per 30 items)
         val getAllDictionary =
@@ -652,9 +652,11 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
+            this.onStop()
         } else {
             super.onBackPressed()
         }
+        super.onBackPressed()
     }
 
    /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -820,7 +822,7 @@ class NavigationDrawerActivity : AppCompatActivity(), WordListFragment.SendDataT
         rv_search.visibility = View.GONE
 
         val fragmentManager = supportFragmentManager
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment,fragmentTag).commit()
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment,fragmentTag).addToBackStack(fragmentTag).commit()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
